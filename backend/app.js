@@ -8,13 +8,19 @@ const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const app = express();
-// const corsOrigin = ["localhost:8080", "localhost:3000", "localhost:4000"];
-// const corsSetting = {
-//   origin: corsOrigin,
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//   credentials: true,
-// };
-// app.use(cors(corsSetting));
+const corsOrigin = [
+  "localhost:8080",
+  "localhost:3000",
+  "localhost:3001",
+  "localhost:4000",
+  "localhost:5174",
+];
+const corsSetting = {
+  origin: corsOrigin,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true,
+};
+app.use(cors(corsSetting));
 app.use(express.json());
 app.get("/", (req, res) => {
   try {
@@ -26,8 +32,10 @@ app.get("/", (req, res) => {
 // routers
 const auth = require("./routers/auth.js");
 const message = require("./routers/message.js");
+const contact = require("./routers/contact.js");
 app.use("/api/auth", auth);
 app.use("/api/message", message);
+app.use("/api/contact", contact);
 
 //listening app
 const server = http.createServer(app);

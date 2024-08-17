@@ -80,7 +80,7 @@ exports.login = async (req, res) => {
 exports.getUserDetails = async (req, res) => {
   try {
     const user = await Auth.findOne({ _id: req.user.id });
-    const { name, userId, visibilityType } = await user;
+    const { name, userId, visibilityType } = user;
     if (!user) {
       return res.json({
         success: false,
@@ -98,7 +98,7 @@ exports.getUserDetails = async (req, res) => {
     res.json({
       success: false,
       error: true,
-      errors: error,
+      errors: { error, msg: "can't fetch data at the moment" },
     });
   }
 };
@@ -130,6 +130,30 @@ exports.editProfile = async (req, res) => {
         data: updatedUser,
       });
     }
+  } catch (error) {
+    res.json({
+      success: false,
+      error: true,
+      errors: error,
+    });
+  }
+};
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await Auth.findOne({ _id: req.user.id });
+    if (!user) {
+      return res.json({
+        success: false,
+        error: true,
+        data: { msg: "user does not exist!" },
+      });
+    }
+    await Auth.findOneAndDelete({ _id: req.user.id });
+    res.json({
+      success: true,
+      error: false,
+      data: { msg: "user deleted successfully!" },
+    });
   } catch (error) {
     res.json({
       success: false,

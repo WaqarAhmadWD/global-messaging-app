@@ -3,9 +3,9 @@ const router = express.Router();
 const controller = require("../controllers/auth.js");
 const { body } = require("express-validator");
 const middleware = require("../middlewares/middlewares.js");
-// create account
+// create user
 router.post(
-  "/create-account",
+  "/create-user",
   [
     body("name")
       .isLength({ min: 3 })
@@ -20,7 +20,7 @@ router.post(
   controller.createAccount
 );
 
-// login account
+// login user
 router.post(
   "/login",
   [
@@ -34,14 +34,12 @@ router.post(
   controller.login
 );
 
-// get data
-router.get(
-  "/get-user-data",
-  middleware.tokenValidator,
-  controller.getUserDetails
-);
+// get user
+router.get("/get-user", middleware.tokenValidator, controller.getUserDetails);
 
-// edit profile
-router.put("/edit-profile", middleware.tokenValidator, controller.editProfile);
+// edit user
+router.put("/edit-user", middleware.tokenValidator, controller.editProfile);
 
+// delete user
+router.delete("/delete-user", middleware.tokenValidator, controller.deleteUser);
 module.exports = router;

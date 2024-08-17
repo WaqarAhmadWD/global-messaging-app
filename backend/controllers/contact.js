@@ -10,70 +10,30 @@ exports.createContact = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-  const { name, userId } = req.body;
   try {
-    let user = await contact.findOne({ userId });
-    if (user) {
-      return res.status(402).json({
-        success: false,
-        error: true,
-        errors: { msg: "User already existed!" },
-      });
-    }
-    const salt = await bcrypt.genSalt(12, "2b");
-    const hash = await bcrypt.hash(password, salt);
-    user = await contact.create({
-      name,
-      userId,
-      password: hash,
-      visibilityType,
-    });
-
-    const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
-    res.json({
-      success: true,
-      error: false,
-      user,
-      token: token,
-    });
+    const { name, contactId } = req.body;
+    const cont = await contact.create({ name, userId: req.user.id, contactId });
+    res.json({ success: true, error: false, data: cont });
   } catch (error) {
     res.json({ success: false, error: true, errors: error });
   }
 };
 
-// login account
-exports.login = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  }
-  const { userId, password } = req.body;
+// get all contact
+exports.getContacts = async (req, res) => {
   try {
-    const user = await contact.findOne({ userId });
-    if (!user) {
-      return res.json({
-        success: false,
-        error: true,
-        errors: { msg: "User does not exists!" },
-      });
-    }
-    const verifiedPassword = await bcrypt.compare(password, user.password);
-    if (!verifiedPassword) {
-      return res.json({
-        success: false,
-        error: true,
-        errors: { msg: "Wrong password" },
-      });
-    } else {
-      const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
-      res.json({
-        success: true,
-        error: false,
-        token: token,
-      });
-    }
+    const contacts = await contact.find({ _id: req.params.id });
+    return res.json({
+      success: true,
+      error: false,
+      data: contacts,
+    });
   } catch (error) {
-    res.json({ success: false, error: true, errors: error });
+    res.json({
+      success: false,
+      error: true,
+      errors: { error, msg: "something went wrong getting contacts" },
+    });
   }
 };
 // get user details
@@ -130,6 +90,31 @@ exports.editProfile = async (req, res) => {
         data: updatedUser,
       });
     }
+  } catch (error) {
+    res.json({
+      success: false,
+      error: true,
+      errors: error,
+    });
+  }
+};
+
+exports.deleteContact = async (req, res) => {
+  try {
+    const user = await contact.findOne({ _id: req.user.id });
+    if (!user) {
+      return res.json({
+        success: false,
+        error: true,
+        data: { msg: "user does not exist!" },
+      });
+    }
+    await contact.findOneAndDelete({ _id: req.user.id });
+    res.json({
+      success: true,
+      error: false,
+      data: { msg: "user deleted successfully!" },
+    });
   } catch (error) {
     res.json({
       success: false,

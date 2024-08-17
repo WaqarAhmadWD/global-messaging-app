@@ -10,28 +10,12 @@ router.post(
     body("name")
       .isLength({ min: 3 })
       .withMessage("Name must be at least 3 characters"),
-    body("userId")
+    body("contactId")
       .isLength({ min: 3 })
       .withMessage("User ID must be at least 3 characters"),
-    body("password")
-      .isLength({ min: 5 })
-      .withMessage("Password must be at least 5 characters"),
   ],
-  controller.createAccount
-);
-
-// delete contact
-router.delete(
-  "/delete-contact",
-  [
-    body("userId")
-      .isLength({ min: 3 })
-      .withMessage("User ID must be at least 3 characters"),
-    body("password")
-      .isLength({ min: 3 })
-      .withMessage("Password must be at least 5 characters"),
-  ],
-  controller.login
+  middleware.tokenValidator,
+  controller.createContact
 );
 
 // get contact
@@ -42,6 +26,25 @@ router.get(
 );
 
 // edit contact
-router.put("/edit-contact", middleware.tokenValidator, controller.editProfile);
+router.put(
+  "/edit-contact/:id",
+  [
+    body("name")
+      .isLength({ min: 3 })
+      .withMessage("Name must be at least 3 characters"),
+    body("userId")
+      .isLength({ min: 3 })
+      .withMessage("User ID must be at least 3 characters"),
+  ],
+  middleware.tokenValidator,
+  controller.editProfile
+);
+
+// delete contact
+router.delete(
+  "/delete-contact/:id",
+  middleware.tokenValidator,
+  controller.deleteContact
+);
 
 module.exports = router;
