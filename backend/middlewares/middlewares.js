@@ -17,7 +17,8 @@ exports.tokenValidator = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    res.json({
+    console.error(error);
+    res.status(500).json({
       success: false,
       error: true,
       errors: { msg: "something went wrong in token verification!" },
