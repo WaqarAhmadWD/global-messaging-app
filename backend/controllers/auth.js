@@ -30,14 +30,14 @@ exports.createAccount = async (req, res) => {
     });
 
     const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
-    res.json({
+    res.status(201).json({
       success: true,
       error: false,
       user,
       token: token,
     });
   } catch (error) {
-    res.json({ success: false, error: true, errors: error });
+    res.status(500).json({ success: false, error: true, errors: error });
   }
 };
 
@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
   try {
     const user = await Auth.findOne({ userId });
     if (!user) {
-      return res.json({
+      return res.status(404).json({
         success: false,
         error: true,
         errors: { msg: "User does not exists!" },
@@ -59,21 +59,27 @@ exports.login = async (req, res) => {
     }
     const verifiedPassword = await bcrypt.compare(password, user.password);
     if (!verifiedPassword) {
-      return res.json({
+      return res.status(401).json({
         success: false,
         error: true,
         errors: { msg: "Wrong password" },
       });
     } else {
       const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
-      res.json({
+      res.status(200).json({
         success: true,
         error: false,
         token: token,
+        data: {
+          _id: user._id,
+          name: user.name,
+          userId: user.userId,
+          visibilityType: user.visibilityType,
+        },
       });
     }
   } catch (error) {
-    res.json({ success: false, error: true, errors: error });
+    res.status(500).json({ success: false, error: true, errors: error });
   }
 };
 // get user details
@@ -82,20 +88,20 @@ exports.getUserDetails = async (req, res) => {
     const user = await Auth.findOne({ _id: req.user.id });
     const { name, userId, visibilityType } = user;
     if (!user) {
-      return res.json({
+      return res.status(404).json({
         success: false,
         error: true,
         errors: { msg: "User does not exists!" },
       });
     } else {
-      res.json({
+      res.status(200).json({
         success: true,
         error: false,
         data: { name, userId, visibilityType },
       });
     }
   } catch (error) {
-    res.json({
+    res.status(500).json({
       success: false,
       error: true,
       errors: { error, msg: "can't fetch data at the moment" },
@@ -105,35 +111,54 @@ exports.getUserDetails = async (req, res) => {
 
 // edit profile
 exports.editProfile = async (req, res) => {
-  const { name, visibilityType } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
   try {
-    const user = await Auth.findOne({ _id: req.user.id });
-    if (!user) {
-      return res.json({
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["name", "visibilityType"];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdates.includes(update)
+    );
+
+    if (!isValidOperation) {
+      res.status(400);
+      return res.status(400).json({
         success: false,
         error: true,
-        errors: { msg: "User does not exists!" },
-      });
-    } else {
-      const updatedUser = await Auth.updateOne(
-        { _id: req.user.id },
-        {
-          $set: {
-            name: name,
-            visibilityType: visibilityType,
-          },
-        }
-      );
-      res.json({
-        success: true,
-        error: false,
-        data: updatedUser,
+        message: "Invalid updates!",
       });
     }
+
+    const user = await Auth.findById(req.user?.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "User not found!",
+      });
+    }
+    updates.forEach((update) => {
+      user[update] = req.body[update];
+    });
+    await user.save();
+    res.status(201).send({
+      success: true,
+      error: false,
+      message: "User Updated successfuly!",
+      data: {
+        name: user.name,
+        userId: user.userId,
+        visibilityType: user.visibilityType,
+      },
+    });
   } catch (error) {
-    res.json({
+    res.status(500).send({
       success: false,
       error: true,
+      message: "Unable to update user details at the moment.",
       errors: error,
     });
   }
@@ -142,20 +167,20 @@ exports.deleteUser = async (req, res) => {
   try {
     const user = await Auth.findOne({ _id: req.user.id });
     if (!user) {
-      return res.json({
+      return res.status(404).json({
         success: false,
         error: true,
         data: { msg: "user does not exist!" },
       });
     }
     await Auth.findOneAndDelete({ _id: req.user.id });
-    res.json({
+    res.status(200).json({
       success: true,
       error: false,
       data: { msg: "user deleted successfully!" },
     });
   } catch (error) {
-    res.json({
+    res.status(500).json({
       success: false,
       error: true,
       errors: error,

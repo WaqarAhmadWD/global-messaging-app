@@ -6,6 +6,7 @@ connectionToDb();
 // express configurations
 const http = require("http");
 const express = require("express");
+const { Server } = require("socket.io");
 const cors = require("cors");
 const app = express();
 const corsOrigin = [
@@ -24,9 +25,11 @@ app.use(cors(corsSetting));
 app.use(express.json());
 app.get("/", (req, res) => {
   try {
-    res.json({ success: true, error: false, message: "api is working fine" });
+    res
+      .status(200)
+      .json({ success: true, error: false, message: "it is messaging app" });
   } catch (error) {
-    res.json(error);
+    res.status(500).json(error);
   }
 });
 // routers
@@ -37,8 +40,28 @@ app.use("/api/auth", auth);
 app.use("/api/message", message);
 app.use("/api/contact", contact);
 
-//listening app
+// error and not found
+app.use((req, res, next) => {
+  const error = new Error("Not Found");
+  error.status = 404;
+  next(error);
+});
+
+app.use((error, req, res, next) => {
+  res.status(error.status || 500).json({
+    success: false,
+    error: true,
+    erros: { msg: error.message },
+  });
+});
+// socket connection
 const server = http.createServer(app);
+const io = new Server(server);
+io.on("connection", (socket) => {
+  console.log("a user connected", socket.id);
+});
+
+//listening app
 server.listen(process.env.PORT, () => {
   console.log("connected to port http://localhost:" + process.env.PORT);
 });

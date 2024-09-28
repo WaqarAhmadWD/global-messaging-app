@@ -5,7 +5,7 @@ const { body } = require("express-validator");
 const middleware = require("../middlewares/middlewares.js");
 // create user
 router.post(
-  "/create-user",
+  "/create",
   [
     body("name")
       .isLength({ min: 3 })
@@ -35,11 +35,21 @@ router.post(
 );
 
 // get user
-router.get("/get-user", middleware.tokenValidator, controller.getUserDetails);
+router.get("/get", middleware.tokenValidator, controller.getUserDetails);
 
 // edit user
-router.put("/edit-user", middleware.tokenValidator, controller.editProfile);
+router.put(
+  "/update",
+  middleware.tokenValidator,
+  [
+    body("name")
+      .isLength({ min: 3 })
+      .withMessage("Name must be at least 3 characters"),
+    body("visibilityType").notEmpty().withMessage("visibilityType is missing"),
+  ],
+  controller.editProfile
+);
 
 // delete user
-router.delete("/delete-user", middleware.tokenValidator, controller.deleteUser);
+router.delete("/delete", middleware.tokenValidator, controller.deleteUser);
 module.exports = router;
