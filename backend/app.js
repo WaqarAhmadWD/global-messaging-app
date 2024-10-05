@@ -10,20 +10,31 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const app = express();
 const corsOrigin = [
-  "localhost:8080",
-  "localhost:3000",
-  "localhost:3001",
-  "localhost:4000",
-  "localhost:5174",
+  "http://localhost:8080",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+  "http://localhost:3003",
+  "http://localhost:3004",
+  "http://localhost:4000",
+  "http://localhost:5174",
 ];
+
 const corsSetting = {
   origin: corsOrigin,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true,
 };
+
 app.use(cors(corsSetting));
 app.use(express.json());
-app.get("/", (req, res) => {
+
+// Test CORS endpoint
+app.get("/api/test-cors", (req, res) => {
+  res.status(200).json({ message: "CORS is working!" });
+});
+
+app.get("/api/", (req, res) => {
   try {
     res
       .status(200)
@@ -32,6 +43,7 @@ app.get("/", (req, res) => {
     res.status(500).json(error);
   }
 });
+
 // routers
 const auth = require("./routers/auth.js");
 const message = require("./routers/message.js");
@@ -54,6 +66,7 @@ app.use((error, req, res, next) => {
     erros: { msg: error.message },
   });
 });
+
 // socket connection
 const server = http.createServer(app);
 const io = new Server(server);
@@ -61,7 +74,7 @@ io.on("connection", (socket) => {
   console.log("a user connected", socket.id);
 });
 
-//listening app
+// listening app
 server.listen(process.env.PORT, () => {
   console.log("connected to port http://localhost:" + process.env.PORT);
 });
