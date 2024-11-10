@@ -5,6 +5,19 @@ import FormD from "@/components/FormD.js";
 export default function Home() {
   const fields = [
     {
+      name: "name",
+      label: "Full Name",
+      type: "text",
+      placeholder: "Enter your name",
+      class: "border-2 border-gray-300 rounded-lg p-2",
+      validation: {
+        required: true,
+        string: true,
+        min: 2,
+        max: 50,
+      },
+    },
+    {
       name: "Username",
       label: "Username",
       type: "text",
@@ -18,10 +31,71 @@ export default function Home() {
       },
     },
     {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email",
+      class: "border-2 border-gray-300 rounded-lg p-2",
+      validation: {
+        required: true,
+        email: true,
+      },
+    },
+    {
+      name: "birthday",
+      label: "Birthday",
+      type: "date",
+      placeholder: "Enter your birth date",
+      class: "border-2 border-gray-300 rounded-lg p-2",
+      validation: {
+        required: true,
+      },
+    },
+    {
+      name: "type",
+      label: "Account Type",
+      type: "select",
+      placeholder: "Enter type",
+      options: [
+        { id: 1, name: "private" },
+        { id: 2, name: "public" },
+      ],
+      class: "border-2 border-gray-300 rounded-lg p-2 col-span-2",
+      validation: {
+        required: true,
+      },
+    },
+    {
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      placeholder: "Select your gender",
+      options: [
+        { id: 1, name: "male" },
+        { id: 2, name: "female" },
+        { id: 3, name: "Prefer not to say" },
+      ],
+      class: "border-2 border-gray-300 rounded-lg p-2 col-span-2",
+      validation: {
+        required: true,
+      },
+    },
+    {
       name: "password",
       label: "Password",
       type: "password",
       placeholder: "Enter your password",
+      class: "border-2 border-gray-300 rounded-lg p-2",
+      // MainClass: "col-span-2",
+      validation: {
+        required: true,
+      },
+    },
+    {
+      name: "confirmPassword",
+      label: "Confirm Password",
+      type: "password",
+      placeholder: "Enter your password again",
       class: "border-2 border-gray-300 rounded-lg p-2",
       // MainClass: "col-span-2",
       validation: {
@@ -57,7 +131,9 @@ export default function Home() {
         />
         <div className="grow">
           <div>
-            <h1 className="text-[2.625rem] font-bold mb-[1.3125rem]">Login</h1>
+            <h1 className="text-[2.625rem] font-bold mb-[1.3125rem]">
+              Sign up
+            </h1>
             <p className="text-[#313131] mb-[2.0625rem]">
               Let’s get you all st up so you can access your personal account.
             </p>
@@ -66,7 +142,6 @@ export default function Home() {
             model={model}
             fields={fields}
             onSubmit={formModel}
-            custom_class={{ main: "flex flex-col gap-4" }}
             rest={
               <div className="flex gap-2 col-span-2 items-center">
                 <input type="checkbox" className="w-4 h-4" />

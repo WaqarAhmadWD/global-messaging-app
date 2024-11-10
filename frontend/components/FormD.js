@@ -81,11 +81,16 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
   };
 
   return (
-    <div className={custom_class?.main || "grid grid-cols-2 gap-[1.25rem]"}>
+    <div
+      className={
+        custom_class?.main ||
+        "md:grid md:grid-cols-2 md:gap-[1.25rem] flex flex-col gap-2"
+      }
+    >
       {filter.map((field, index) => (
         <div key={index} className={field.MainClass}>
           <label
-            className="mb-2 text-sm font-medium text-default-900 ml-2 grid gap-6 lg:grid-cols-2"
+            className="mb-2 text-sm font-medium text-default-900 ml-2  w-full "
             htmlFor={field.name}
           >
             {field.label}
