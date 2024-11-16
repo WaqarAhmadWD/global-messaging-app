@@ -1,11 +1,26 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import FormD from "@/components/FormD.js";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { fetchData } from "@/app/store/slices/apiSlices";
+import { useRouter } from "next/navigation"; // Correct import for Next.js
+
+// Set initial state with empty values to ensure controlled components
 
 export default function Home() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [model, setModel] = useState({
+    userId: "",
+    password: "",
+    terms: false,
+  });
+
   const fields = [
     {
-      name: "Username",
+      name: "userId",
       label: "Username",
       type: "text",
       placeholder: "Enter your name",
@@ -29,24 +44,23 @@ export default function Home() {
       },
     },
   ];
-  const formModel = (data) => {
-    console.log(data);
+  const formModel = async (data) => {
+    if (!model.terms) {
+      dispatch(fetchData({ throwMe: "Terms must be provided" }));
+      return;
+    }
+    const result = await dispatch(
+      fetchData({ url: "/auth/login", method: "POST", data })
+    ).unwrap();
+    if (result.token && result.user) {
+      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("Authorization", result.token);
+      router.push("/");
+    }
   };
 
-  // Set initial state with empty values to ensure controlled components
-  const [model, setModel] = useState({
-    name: "",
-    Username: "",
-    email: "",
-    password: "",
-    birthday: "",
-    type: "",
-    confirmPassword: "",
-    gender: "",
-  });
-
   return (
-    <div className="lg:w-[75rem] md:w-[83.3%] px-8 pt-[1.875em]  mx-auto">
+    <div className="lg:w-[75rem] md:w-[83.3%] px-8 pt-[1.875em]  mx-auto ">
       <img src="/images/logo.svg" alt="Logo" className="w-[7.75rem] md:mx-8" />
 
       <div className="flex justify-between md:gap-[5.9375rem] md:p-8">
@@ -58,7 +72,7 @@ export default function Home() {
         <div className="grow">
           <div>
             <h1 className="text-[2.625rem] font-bold mb-[1.3125rem]">Login</h1>
-            <p className="text-[#313131] mb-[2.0625rem]">
+            <p className=" mb-[2.0625rem]">
               Let’s get you all st up so you can access your personal account.
             </p>
           </div>
@@ -66,35 +80,45 @@ export default function Home() {
             model={model}
             fields={fields}
             onSubmit={formModel}
-            custom_class={{ main: "flex flex-col gap-4" }}
+            custom_className={{ main: "flex flex-col gap-4" }}
             rest={
               <div className="flex gap-2 col-span-2 items-center">
-                <input type="checkbox" className="w-4 h-4" />
+                <input
+                  type="checkbox"
+                  className="w-4 h-4"
+                  checked={model.terms}
+                  onChange={(e) =>
+                    setModel({ ...model, terms: e.target.checked })
+                  }
+                />
                 <div className="flex gap-1">
                   <p className="text-[10px] md:text-[16px]">
                     I agree to all the{" "}
                   </p>
                   <p className="text-[10px] md:text-[16px]">
-                    <span className="text-[#FF8682]">Terms</span> and clear
+                    <span className="text-[#A052C6]">Terms</span> and clear
                   </p>
                   <p className="text-[10px] md:text-[16px]">
-                    <span className="text-[#FF8682]">Privacy Policies</span>
+                    <span className="text-[#A052C6]">Privacy Policies</span>
                   </p>
                 </div>
               </div>
             }
           />
           <div className="flex justify-center items-center mb-4">
-            Already have an account? Login
+            Don't have an account?{" "}
+            <Link href="/auth/signup" className="text-[#A052C6]">
+              Signup{" "}
+            </Link>
           </div>
           <div className="flex justify-between items-center flex-col md:flex-row gap-4">
             <p>Or Sin up with</p>
-            <dv className="border-[1px] border-black px-16 py-4 rounded-lg">
+            <div className="border-[1px] border-black px-16 py-4 rounded-lg">
               google
-            </dv>
-            <dv className="border-[1px] border-black px-16 py-4 rounded-lg">
+            </div>
+            <div className="border-[1px] border-black px-16 py-4 rounded-lg">
               facebook
-            </dv>
+            </div>
           </div>
         </div>
       </div>

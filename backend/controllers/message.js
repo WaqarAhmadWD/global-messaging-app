@@ -4,7 +4,12 @@ const Auth = require("../models/auth.js");
 exports.sendMessage = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   const { message } = req.body;
 

@@ -8,16 +8,20 @@ require("dotenv").config();
 exports.createAccount = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   const { name, userId, password, visibilityType } = req.body;
   try {
     let user = await Auth.findOne({ userId });
     if (user) {
       return res.status(402).json({
-        success: false,
-        error: true,
-        errors: { msg: "User already existed!" },
+        message: "",
+        error: "Username already exist!",
       });
     }
     const salt = await bcrypt.genSalt(12, "2b");
@@ -28,16 +32,22 @@ exports.createAccount = async (req, res) => {
       password: hash,
       visibilityType,
     });
+    // Exclude the password field before sending the response
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
     const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
     res.status(201).json({
-      success: true,
-      error: false,
-      user,
+      message: "User Created Successfully",
+      user: userWithoutPassword,
       token: token,
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: true, errors: error });
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: "User could not be created",
+      errors: error,
+    });
   }
 };
 
@@ -45,32 +55,34 @@ exports.createAccount = async (req, res) => {
 exports.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   const { userId, password } = req.body;
   try {
     const user = await Auth.findOne({ userId });
     if (!user) {
       return res.status(404).json({
-        success: false,
-        error: true,
-        errors: { msg: "User does not exists!" },
+        message: "User does not exist",
+        error: "",
       });
     }
     const verifiedPassword = await bcrypt.compare(password, user.password);
     if (!verifiedPassword) {
       return res.status(401).json({
-        success: false,
-        error: true,
-        errors: { msg: "Wrong password" },
+        message: "Credentials are wrong",
+        error: "",
       });
     } else {
       const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
       res.status(200).json({
-        success: true,
-        error: false,
+        message: "Login Successfully!",
         token: token,
-        data: {
+        user: {
           _id: user._id,
           name: user.name,
           userId: user.userId,
@@ -79,7 +91,9 @@ exports.login = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ success: false, error: true, errors: error });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: "", errors: error });
   }
 };
 // get user details
@@ -89,22 +103,20 @@ exports.getUserDetails = async (req, res) => {
     const { name, userId, visibilityType } = user;
     if (!user) {
       return res.status(404).json({
-        success: false,
-        error: true,
-        errors: { msg: "User does not exists!" },
+        message: "User does not exists!",
+        error: "",
       });
     } else {
       res.status(200).json({
-        success: true,
-        error: false,
+        message: "User fetched successfully",
+        error: "",
         data: { name, userId, visibilityType },
       });
     }
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: true,
-      errors: { error, msg: "can't fetch data at the moment" },
+      message: "Internal Server Error",
+      error: "",
     });
   }
 };
@@ -113,7 +125,12 @@ exports.getUserDetails = async (req, res) => {
 exports.editProfile = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   try {
     const updates = Object.keys(req.body);
@@ -125,9 +142,8 @@ exports.editProfile = async (req, res) => {
     if (!isValidOperation) {
       res.status(400);
       return res.status(400).json({
-        success: false,
-        error: true,
-        message: "Invalid updates!",
+        message: "Invalid updates",
+        error: "",
       });
     }
 
@@ -135,8 +151,7 @@ exports.editProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        success: false,
-        error: true,
+        error: "",
         message: "User not found!",
       });
     }
@@ -145,9 +160,8 @@ exports.editProfile = async (req, res) => {
     });
     await user.save();
     res.status(201).send({
-      success: true,
-      error: false,
       message: "User Updated successfuly!",
+      error: "",
       data: {
         name: user.name,
         userId: user.userId,
@@ -156,9 +170,8 @@ exports.editProfile = async (req, res) => {
     });
   } catch (error) {
     res.status(500).send({
-      success: false,
-      error: true,
       message: "Unable to update user details at the moment.",
+      error: "",
       errors: error,
     });
   }
@@ -168,21 +181,19 @@ exports.deleteUser = async (req, res) => {
     const user = await Auth.findOne({ _id: req.user.id });
     if (!user) {
       return res.status(404).json({
-        success: false,
-        error: true,
-        data: { msg: "user does not exist!" },
+        message: "user does not exist!",
+        error: "",
       });
     }
     await Auth.findOneAndDelete({ _id: req.user.id });
     res.status(200).json({
-      success: true,
-      error: false,
-      data: { msg: "user deleted successfully!" },
+      message: "user deleted successfully!",
+      error: "",
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: true,
+      message: "Internal Server Error",
+      error: "",
       errors: error,
     });
   }

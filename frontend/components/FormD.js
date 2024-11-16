@@ -101,7 +101,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
               id={field.name}
               name={field.name}
               placeholder={field.placeholder}
-              className={`rounded-lg border px-4 py-2.5 w-full ${field.class}`}
+              className={`rounded-lg px-4 py-2.5 w-full ${field.class}`}
               value={formModel[field.name]}
               onChange={(e) => handleChange(index, e)}
             />
@@ -111,7 +111,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
             <select
               id={field.name}
               name={field.name}
-              className={`rounded-lg border px-4 py-2.5 w-full bg-white ${field.class}`}
+              className={`rounded-lg px-4 py-2.5 w-full text-black ${field.class}`}
               value={formModel[field.name]}
               onChange={(e) => handleChange(index, e)}
             >
@@ -119,7 +119,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
                 <option
                   key={option.id}
                   value={option.name}
-                  className="bg-white"
+                  className="text-black"
                 >
                   {option.name}
                 </option>
@@ -133,7 +133,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
               type={field.type}
               name={field.name}
               placeholder={field.placeholder}
-              className={`rounded-lg border px-4 py-2.5 w-full ${field.class}`}
+              className={`rounded-lg px-4 py-2.5 w-full ${field.class}`}
               value={formModel[field.name]}
               onChange={(e) => handleChange(index, e)}
             />
@@ -166,7 +166,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
                 id={field.name}
                 name={field.name}
                 placeholder={field.placeholder}
-                className={`rounded-lg border px-4 py-2.5 w-full ${field.class}`}
+                className={`rounded-lg px-4 py-2.5 w-full ${field.class}`}
                 value={formModel[field.name]}
                 onChange={(e) => handleChange(index, e)}
               />
@@ -199,7 +199,7 @@ const FormComponent = ({ fields, model, custom_class, onSubmit, rest }) => {
           onClick={submitForm}
           className={
             custom_class?.button ||
-            "mt-4 bg-[#A052C6] text-white w-full px-6 py-2.5 rounded-lg hover:bg-gray-300 mb-4"
+            "mt-4 bg-[#A052C6] text-white w-full px-6 py-2.5 rounded-lg hover:bg-[#751ea0] mb-4"
           }
         >
           Submit

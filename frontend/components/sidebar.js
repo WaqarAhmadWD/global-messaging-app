@@ -1,11 +1,13 @@
+import Link from "next/link";
+import NotificationCounter from "./NotificationCounter";
 const sidebarComponent = () => {
   const chats = [
-    { id: 0, title: "all chats" },
-    { id: 1, title: "all chats" },
-    { id: 2, title: "all chats" },
-    { id: 3, title: "all chats" },
-    { id: 4, title: "all chats" },
-    { id: 5, title: "all chats" },
+    { id: 0, img: "/images/all_chats.svg", title: "All Chats" },
+    { id: 1, img: "/images/grou_chats.svg", title: "Group Chats" },
+    { id: 2, img: "/images/stores.svg", title: "Stories" },
+    { id: 3, img: "/images/chat_requests.svg", title: "Chat Requests" },
+    { id: 4, img: "/images/archive.svg", title: "Archive" },
+    { id: 5, img: "/images/globe.svg", title: "Public Club" },
   ];
   return (
     <div className=" left-0 top-0 h-full lg:w-64 hidden lg:block fixed  border-r text-white bg-black">
@@ -21,12 +23,10 @@ const sidebarComponent = () => {
                 className="m-2 px-4 py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center"
               >
                 <div className="flex gap-2 items-center">
-                  <img src="images/chat.svg" alt="" className="w-4" />
+                  <img src={e.img} alt="" className="w-4" />
                   <div>{e.title}</div>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-gray-500 flex justify-center items-center text-sm">
-                  1
-                </div>
+                <NotificationCounter />
               </div>
             );
           })}
@@ -38,13 +38,15 @@ const sidebarComponent = () => {
               <div>setting</div>
             </div>
           </div>
-          <div className="m-2 px-4 py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center">
+          <Link
+            href="/auth/login"
+            className="m-2 px-4 py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center"
+          >
             <div className="flex gap-2 items-center">
-              <img src="images/logout.svg" alt="" className="w-4" />
+              <img src="/images/logout-door.svg" alt="" />
               <div>login</div>
             </div>
-            <img src="/images/logout-door.svg" alt="" />
-          </div>
+          </Link>
         </div>
       </div>
     </div>

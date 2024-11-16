@@ -40,11 +40,11 @@ const sidebarComponent = () => {
           <img src="/images/profile.svg" alt="" className="w-12 h-12" />
           <img src="/images/profile.svg" alt="" className="w-12 h-12" />
         </div>
-        <div className="grow flex flex-col gap-4">
+        <div className=" flex flex-col gap-4">
           <div className="w-full bg-purple-400 aspect-[2.2] rounded-xl"></div>
           <div className="w-full bg-purple-400 aspect-[2.2] rounded-xl"></div>
         </div>
-        <div className="bg-[#383838] p-4 ">
+        <div className="bg-[#383838] p-4 grow ">
           <div className="text-[1.125rem] font-bold">Notifications</div>
           {notif.map((e) => (
             <div
@@ -52,7 +52,7 @@ const sidebarComponent = () => {
               key={e.id}
             >
               <div className="flex gap-2 items-center">
-                <img src="images/notification.svg" alt="" className="w-4" />
+                <img src="images/notification.svg" alt="" className="w-5" />
                 <div>
                   <h1 className="font-semibold">{e.contact}</h1>
                   <p className="text-sm">{e.message}</p>
@@ -62,10 +62,10 @@ const sidebarComponent = () => {
           ))}
         </div>
 
-        <div className="  text-[1.125rem] font-bold flex gap-2 items-center">
+        {/* <div className="  text-[1.125rem] font-bold flex gap-2 items-center">
           <img src="/images/globe.svg" alt="" className="w-10 h-10" />
           <span>Public Club</span>
-        </div>
+        </div> */}
       </div>
     </div>
   );

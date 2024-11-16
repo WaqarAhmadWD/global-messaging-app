@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Pontano+Sans:wght@300..700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,4 +23,51 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(255, 88, 255);
+}
+
+.color-success {
+  background: #22bb33 !important;
+  color: white !important;
+  font: bold;
+}
+.color-error {
+  background: #bb2124 !important;
+  color: white !important;
+  font: bold;
+}
+.color-info {
+  background: #00c3ff !important;
+  color: black !important;
+  font: bold;
+}
+
+.color-loading {
+  background: white !important;
+  color: black !important;
+  font: bold;
+}
+
+* {
+  font-family: "Pontano Sans", sans-serif;
+  padding: 0;
+  margin: 0;
+}
+body {
+  background: black;
+  color: white;
+}
+
+input {
+  background: black;
+  border: 1px solid gray;
+}
+select {
+  background: black;
+  border: 1px solid gray;
+  color: white !important;
+}
+option {
+  background: black;
+  border: 1px solid gray;
+  color: white !important;
 }

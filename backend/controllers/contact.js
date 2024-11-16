@@ -5,7 +5,12 @@ const Auth = require("../models/auth.js");
 exports.createContact = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   try {
     const { name, contactId } = req.body;
@@ -80,7 +85,12 @@ exports.getContactDetailsById = async (req, res) => {
 exports.editContact = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({
+      error: errors
+        .array()
+        .map((e) => e.msg)
+        .join(", "),
+    });
   }
   try {
     const updates = Object.keys(req.body);
