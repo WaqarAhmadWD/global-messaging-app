@@ -48,22 +48,19 @@ app.get("/api/", (req, res) => {
 const auth = require("./routers/auth.js");
 const message = require("./routers/message.js");
 const contact = require("./routers/contact.js");
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Backend for OfenUp is deployed properly",
+  });
+});
 app.use("/api/auth", auth);
 app.use("/api/message", message);
 app.use("/api/contact", contact);
 
 // error and not found
-app.use((req, res, next) => {
-  const error = new Error("Not Found");
-  error.status = 404;
-  next(error);
-});
-
-app.use((error, req, res, next) => {
-  res.status(error.status || 500).json({
-    success: false,
-    error: true,
-    erros: { msg: error.message },
+app.use((req, res) => {
+  res.status(404).json({
+    message: "Wrong URL or API",
   });
 });
 
