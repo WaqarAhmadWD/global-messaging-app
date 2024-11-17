@@ -3,7 +3,7 @@ const Auth = require("../models/auth.js");
 require("dotenv").config();
 exports.tokenValidator = async (req, res, next) => {
   try {
-    const token = req.header("token");
+    const token = req.header("Authorization");
     if (token) {
       const validator = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
       if (validator) {
@@ -11,18 +11,14 @@ exports.tokenValidator = async (req, res, next) => {
       }
     } else {
       return res.status(401).json({
-        success: false,
-        error: true,
-        errors: { msg: "wrong token" },
+        message: "You are not authorized",
       });
     }
     next();
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      success: false,
-      error: true,
-      errors: { msg: "something went wrong in token verification!" },
+      message: "something went wrong in token verification!",
     });
   }
 };

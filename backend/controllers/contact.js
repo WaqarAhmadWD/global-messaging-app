@@ -43,15 +43,12 @@ exports.getContacts = async (req, res) => {
   try {
     const contacts = await contact.find({ userId: req.user.id });
     return res.status(200).json({
-      success: true,
-      error: false,
+      message: "personal contact fetched successfully",
       data: contacts,
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: true,
-      errors: { error, msg: "something went wrong getting contacts" },
+      message: "something went wrong getting contacts",
     });
   }
 };
