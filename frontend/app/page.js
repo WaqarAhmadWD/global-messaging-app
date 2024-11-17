@@ -2,65 +2,8 @@ import Sidebar from "@/components/sidebar";
 import SidebarRight from "@/components/sidebar-right";
 import MobileHeader from "@/components/MobileHeader";
 import MobileFooter from "@/components/MobileFooter";
-import NotificationCounter from "@/components/NotificationCounter";
+import PublicContacts from "@/components/PublicContacts";
 export default function Home() {
-  const message = [
-    {
-      id: 0,
-      contact: "Sufyan Khan",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 1,
-      contact: "Waqar Ahmad",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 2,
-      contact: "Jamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 3,
-      contact: "Aslam",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 4,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 5,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 6,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 7,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 8,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 9,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-    {
-      id: 10,
-      contact: "Kamal",
-      message: "Last message would appear here an...",
-    },
-  ];
   return (
     <>
       <Sidebar />
@@ -86,31 +29,7 @@ export default function Home() {
               placeholder="Search Here!"
             /> */}
           </div>
-          <div>
-            <div className="bg-[#5F5F5F] h-[1px]"></div>
-            {message.map((e) => (
-              <div
-                className="flex gap-2 justify-between py-4 border-b border-[#5F5F5F]  px-4 mb-2 items-center hover:bg-slate-900  cursor-pointer transition-all duration-200"
-                key={e.id}
-              >
-                <div className=" flex gap-2 items-center">
-                  <img
-                    src="/images/profile.svg"
-                    alt=""
-                    className="md:w-16 md:h-16 w-8 h-8"
-                  />
-                  <div className="flex flex-col">
-                    <h1 className="text-lg font-semibold">{e.contact}</h1>
-                    <p className="text-sm md:text-md">{e.message}</p>
-                  </div>
-                </div>
-                <div className="flex gap-4 items-center">
-                  <NotificationCounter />
-                  <img src="/images/menu.svg" alt="" className="h-1" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <PublicContacts />
         </div>
       </div>
     </>

@@ -175,7 +175,10 @@ exports.deleteContact = async (req, res) => {
 // get all public contact
 exports.getPublicContacts = async (req, res) => {
   try {
-    const contacts = await Auth.find({ visibilityType: "public" });
+    const contacts = await Auth.find({ visibilityType: "public" }).select(
+      "-password -visibilityType -__v"
+    );
+
     return res.status(200).json({
       message: "public contacts fetched successfully!",
       data: contacts,
@@ -183,6 +186,7 @@ exports.getPublicContacts = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "something went wrong getting contacts",
+      errors: error,
     });
   }
 };

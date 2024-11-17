@@ -47,4 +47,6 @@ router.delete(
   controller.deleteContact
 );
 
+router.get("/public-accounts", controller.getPublicContacts);
+
 module.exports = router;
