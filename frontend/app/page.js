@@ -15,8 +15,8 @@ export default function Home() {
           <div className="lg:hidden ">
             <h1 className="text-[#999999] mb-2">Advertisement</h1>
             <div className="flex gap-2">
-              <div className="w-full aspect-[1.7] rounded-xl bg-purple-500"></div>
-              <div className="w-full aspect-[1.7] rounded-xl bg-purple-500"></div>
+              <div className="w-full aspect-[1.7] rounded-xl bg-gray-500"></div>
+              <div className="w-full aspect-[1.7] rounded-xl bg-gray-500"></div>
             </div>
           </div>
           <div className="text-3xl font-bold opacity-75">All Chats</div>
