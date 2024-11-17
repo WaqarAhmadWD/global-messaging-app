@@ -52,7 +52,7 @@ const sidebarComponent = () => {
               key={e.id}
             >
               <div className="flex gap-2 items-center">
-                <img src="images/notification.svg" alt="" className="w-5" />
+                <img src="/images/notification.svg" alt="" className="w-5" />
                 <div>
                   <h1 className="font-semibold">{e.contact}</h1>
                   <p className="text-sm">{e.message}</p>

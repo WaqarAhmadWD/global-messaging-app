@@ -1,6 +1,8 @@
 import axios from "axios";
 const axiosApisInstance = axios.create({
   baseURL: "/api",
+  // baseURL: "https://ofenup.waqarahmad.online/api",
+  // baseURL: "http://localhost:4000/api",
 });
 
 axiosApisInstance.interceptors.request.use(
