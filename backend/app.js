@@ -18,6 +18,7 @@ const corsOrigin = [
   "http://localhost:3004",
   "http://localhost:4000",
   "http://localhost:5174",
+  "https://ofenup.waqarahmad.online",
 ];
 
 const corsSetting = {
@@ -36,6 +37,11 @@ const contact = require("./routers/contact.js");
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Backend for OfenUp is deployed properly",
+  });
+});
+app.get("/api", (req, res) => {
+  res.status(200).json({
+    message: "Backend for OfenUp is deployed properly you are on /api",
   });
 });
 app.use("/api/auth", auth);
