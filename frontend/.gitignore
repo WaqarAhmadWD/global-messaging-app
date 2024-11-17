@@ -14,12 +14,9 @@
 /coverage
 
 # next.js
-/.next/
 /out/
 
-# production
-/build
-
+.vscode
 # misc
 .DS_Store
 *.pem

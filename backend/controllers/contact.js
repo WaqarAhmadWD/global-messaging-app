@@ -1,4 +1,5 @@
 const contact = require("../models/contact.js");
+
 const { validationResult } = require("express-validator");
 const Auth = require("../models/auth.js");
 // create contact
@@ -167,6 +168,21 @@ exports.deleteContact = async (req, res) => {
       success: false,
       error: true,
       errors: error,
+    });
+  }
+};
+
+// get all public contact
+exports.getPublicContacts = async (req, res) => {
+  try {
+    const contacts = await Auth.find({ visibilityType: "public" });
+    return res.status(200).json({
+      message: "public contacts fetched successfully!",
+      data: contacts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "something went wrong getting contacts",
     });
   }
 };

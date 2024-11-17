@@ -29,21 +29,6 @@ const corsSetting = {
 app.use(cors(corsSetting));
 app.use(express.json());
 
-// Test CORS endpoint
-app.get("/api/test-cors", (req, res) => {
-  res.status(200).json({ message: "CORS is working!" });
-});
-
-app.get("/api/", (req, res) => {
-  try {
-    res
-      .status(200)
-      .json({ success: true, error: false, message: "it is messaging app" });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
 // routers
 const auth = require("./routers/auth.js");
 const message = require("./routers/message.js");
