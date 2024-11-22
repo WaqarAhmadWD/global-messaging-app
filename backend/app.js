@@ -34,6 +34,7 @@ app.use(express.json());
 const auth = require("./routers/auth.js");
 const message = require("./routers/message.js");
 const contact = require("./routers/contact.js");
+const dynamic = require("./routers/dynamic.js");
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Backend for OfenUp is deployed properly",
@@ -47,6 +48,8 @@ app.get("/api", (req, res) => {
 app.use("/api/auth", auth);
 app.use("/api/message", message);
 app.use("/api/contact", contact);
+app.use("/api/contact", contact);
+app.use("/api/dynamic", dynamic);
 
 // error and not found
 app.use((req, res) => {
