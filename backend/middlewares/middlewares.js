@@ -29,6 +29,24 @@ const tokenValidator = async (req, res, next) => {
     });
   }
 };
+const Admin = async (req, res, next) => {
+  try {
+    // const token = req.header("Authorization");
+    if (req.user && req.user.role && req.user.role === "admin") {
+      next();
+    } else {
+      return res.status(401).json({
+        message: "You are not authorized to access this route!",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "something went wrong in admin verification!",
+      error,
+    });
+  }
+};
 
 const bodyValidator = async (req, res, next) => {
   validators[req.params.model];
@@ -105,4 +123,5 @@ module.exports = {
   checkPermissions,
   modelSpecificMiddleware,
   bodyValidator,
+  Admin,
 };
