@@ -13,25 +13,26 @@ function message() {
       const result = await dispatch(
         fetchData({ url: "/contact/public-accounts" })
       ).unwrap();
-      setContact(result.data);
+      setContact(result);
     }
     getData();
   }, []);
   return (
     <div>
       <div className="bg-[#5F5F5F] h-[1px]"></div>
-      {!contact && (
+      {contact && (
         <div className="w-full flex justify-center items-center text-2xl font-bold h-[50vh]">
           Loading...
         </div>
       )}
-      {contact && contact.length < 1 && (
+      {contact && contact.message && contact.data && (
         <div className="w-full flex justify-center items-center text-2xl font-bold h-[50vh]">
           No public contact yet
         </div>
       )}
       {contact &&
-        contact.map((e) => (
+        contact.data &&
+        contact.data.map((e) => (
           <Link
             href={`/message/${e._id}`}
             className="flex gap-2 justify-between py-4 border-b border-[#5F5F5F]  px-4 mb-2 items-center hover:bg-slate-900  cursor-pointer transition-all duration-200"

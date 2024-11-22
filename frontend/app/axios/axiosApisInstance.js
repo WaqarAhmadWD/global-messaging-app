@@ -1,8 +1,8 @@
 import axios from "axios";
 const axiosApisInstance = axios.create({
-  baseURL: "/api",
-  // baseURL: "https://ofenup.waqarahmad.online/api",
-  // baseURL: "http://localhost:4000/api",
+  // baseURL: "/api",  // for deployment
+  baseURL: "https://ofenup.waqarahmad.online/api", // local but hosted backend
+  // baseURL: "http://localhost:4000/api",  // local and local backend
 });
 
 axiosApisInstance.interceptors.request.use(
