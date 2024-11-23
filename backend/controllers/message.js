@@ -29,14 +29,10 @@ exports.sendMessage = async (req, res) => {
     });
     if (!messageResponse) {
       return res.status(400).json({
-        success: false,
-        error: true,
         message: "Failed to send message",
       });
     }
     res.status(200).json({
-      success: true,
-      error: false,
       message: `Message sent successfully from ${req.user?.id} user to ${req.params.id} `,
     });
   } catch (error) {
@@ -55,22 +51,18 @@ exports.getMessage = async (req, res) => {
 
     // Check if any messages were found
     if (!messages || messages.length === 0) {
-      return res.status(204).json({
-        success: false,
-        error: true,
+      return res.status(200).json({
         message: "No messages found",
       });
     }
 
     res.status(200).json({
-      success: true,
-      error: false,
+      message: "message fetched successfully!",
       data: messages,
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: true,
+      message: "something went wrong",
       errors: error,
     });
   }

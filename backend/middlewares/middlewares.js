@@ -5,27 +5,25 @@ const { auth, contact, message } = require("../validations");
 const validators = [auth, contact, message];
 
 require("dotenv").config();
+
 const tokenValidator = async (req, res, next) => {
   try {
     // const token = req.header("Authorization");
 
     const token = req.headers["authorization"]?.split(" ")[1];
-    if (token) {
-      const validator = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
-      if (validator) {
-        req.user = await { id: validator };
-      }
-    } else {
+    if (!token) {
       return res.status(401).json({
         message: "You are not authorized",
       });
     }
+    const validator = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
+    if (validator) {
+      req.user = await { id: validator };
+    }
     next();
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       message: "something went wrong in token verification!",
-      error,
     });
   }
 };
@@ -40,7 +38,6 @@ const Admin = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({
       message: "something went wrong in admin verification!",
       error,
