@@ -62,6 +62,7 @@ app.use((req, res) => {
 // socket connection
 const server = http.createServer(app);
 const io = new Server(server);
+
 io.on("connection", (socket) => {
   socket.on("joinRoom", (id) => {
     socket.join(id);

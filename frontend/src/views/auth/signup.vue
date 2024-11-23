@@ -72,7 +72,12 @@ const formModel = async (data) => {
   //   store.fetchData({ throwMe: 'Terms must be provided' });
   //   return;
   // }
-  const result = await store.fetchData({ url: '/auth/create', method: 'POST', data }).unwrap();
+
+  const result = await store
+    .fetchData({ url: '/auth/create', method: 'POST', data })
+    .then((res) => res)
+    .catch((err) => err);
+
   if (result.token && result.user) {
     localStorage.setItem('user', JSON.stringify(result.user));
     localStorage.setItem('Authorization', result.token);
