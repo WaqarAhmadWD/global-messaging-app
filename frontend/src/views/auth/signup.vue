@@ -68,10 +68,10 @@ const model = ref({
 
 // Define form submission handler
 const formModel = async (data) => {
-  if (!model.value.terms) {
-    store.fetchData({ throwMe: 'Terms must be provided' });
-    return;
-  }
+  // if (!model.value.terms) {
+  //   store.fetchData({ throwMe: 'Terms must be provided' });
+  //   return;
+  // }
   const result = await store.fetchData({ url: '/auth/create', method: 'POST', data }).unwrap();
   if (result.token && result.user) {
     localStorage.setItem('user', JSON.stringify(result.user));

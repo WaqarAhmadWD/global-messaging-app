@@ -1,12 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useGeneralStore } from "@/stores/general";
+import Home from "@/views/index.vue";
+import Public from "@/views/public_/public.vue";
+import Login from "@/views/auth/login.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
       name: "home",
-      component: () => import("@/views/index.vue"),
+      component: Home,
     },
     // authorization
     {
@@ -17,7 +20,7 @@ const router = createRouter({
         {
           path: "login",
           name: "login",
-          component: () => import("@/views/auth/login.vue"),
+          component: Login,
         },
         {
           path: "signup",
@@ -40,7 +43,7 @@ const router = createRouter({
     {
       path: "/public",
       name: "public",
-      component: () => import("@/views/public_/public.vue"),
+      component: Public,
     },
     // 404
     {

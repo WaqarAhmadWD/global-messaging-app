@@ -1,0 +1,1 @@
+import{_ as e,c as t,o}from"./index-BiIQKiFZ.js";const c={},n={class:"w-full h-screen flex justify-center items-center md:text-[4rem] text-[1rem] font-bold"};function r(s,f){return o(),t("div",n," sorry not found! ")}const a=e(c,[["render",r]]);export{a as default};

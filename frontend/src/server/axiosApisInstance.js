@@ -1,8 +1,12 @@
 import axios from "axios";
+const serverURL = import.meta.env.VITE_SERVER;
+
+// "/api", // for deployment
+// "https://ofenup.waqarahmad.online/api", // local but hosted backend
+// "http://localhost:4000/api", // local and local backend
+
 const axiosApisInstance = axios.create({
-  baseURL: "/api", // for deployment
-  // baseURL: "https://ofenup.waqarahmad.online/api", // local but hosted backend
-  // baseURL: "http://localhost:4000/api", // local and local backend
+  baseURL: serverURL || "http://localhost:4000/api",
 });
 
 axiosApisInstance.interceptors.request.use(

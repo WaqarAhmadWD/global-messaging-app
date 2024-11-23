@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import NotificationCounter from "@/components/app_component/NotificationCounter.vue";
 
 // Get current route path
@@ -27,16 +27,15 @@ const chats = [
 
       <!-- Chats -->
       <div class="grow">
-        <div v-for="e in chats" :key="e.id" :class="[
-          'm-2 px-4 py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center',
-          pathname === e.url ? 'bg-gray-700' : ''
-        ]">
-          <router-link :to="e.url" class="flex gap-2 items-center w-full">
+        <RouterLink v-for="e in chats" :key="e.id"
+          class="m-2 px-4 py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center"
+          :to="e.url" :class="{ 'bg-gray-700': pathname === e.url }">
+          <div class="flex gap-2 items-center w-full">
             <img :src="e.img" alt="" class="w-4" />
             <div>{{ e.title }}</div>
-          </router-link>
+          </div>
           <NotificationCounter />
-        </div>
+        </RouterLink>
       </div>
 
       <!-- Settings and Logout -->

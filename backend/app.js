@@ -63,9 +63,21 @@ app.use((req, res) => {
 const server = http.createServer(app);
 const io = new Server(server);
 io.on("connection", (socket) => {
+  socket.on("joinRoom", (id) => {
+    socket.join(id);
+    console.log(`Socket joined room: ${id}`);
+  });
   console.log("a user connected", socket.id);
-});
+  // You can handle events here
+  socket.on("message", (id) => {
+    console.log("here is message data:", id);
+    socket.to(id).emit("message", id);
+  });
 
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
+  });
+});
 // listening app
 server.listen(process.env.PORT, () => {
   console.log("connected to port http://localhost:" + process.env.PORT);

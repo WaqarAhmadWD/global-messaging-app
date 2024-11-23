@@ -71,3 +71,7 @@ option {
   border: 1px solid gray;
   color: white !important;
 }
+
+.custom_center {
+  @apply lg:ps-64 lg:pe-96;
+}

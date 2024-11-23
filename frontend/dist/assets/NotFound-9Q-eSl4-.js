@@ -1,1 +1,0 @@
-import{j as e,c as t,b as c}from"./index-BqtcZ5Tp.js";const n={},o={class:"w-screen h-screen flex justify-center items-center md:text-[4rem] text-[1rem] font-bold"};function r(s,f){return c(),t("div",o," sorry not found! ")}const a=e(n,[["render",r]]);export{a as default};

@@ -4,7 +4,7 @@
         <SidebarRight />
         <MobileFooter />
         <Sidebar />
-        <div class="lg:ps-64 lg:pe-96">
+        <div class="custom_center">
             <RouterView />
         </div>
     </div>
