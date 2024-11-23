@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Chat Container -->
-    <div ref="chatContainer" class="mt-[6rem]  overflow-y-auto lg:h-[calc(100vh-12rem)] h-[calc(100vh-14rem)]"
+    <div ref="chatContainer" class="mt-[6rem]  overflow-y-auto lg:h-[calc(100vh-12rem)] h-[calc(100vh-16rem)]"
       @scroll="handleScroll">
       <!-- Messages -->
       <div v-for="message in messageList?.data ? messageList.data : []" :key="message._id"
