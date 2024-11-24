@@ -16,8 +16,9 @@ const fetchContacts = async () => {
     console.error("Failed to fetch public contacts:", error);
   }
 };
-
+const user = ref(null);
 onMounted(() => {
+  user.value = JSON.parse(localStorage.getItem("user"));
   fetchContacts();
 });
 </script>
@@ -31,7 +32,8 @@ onMounted(() => {
     </div>
     <div v-else>
       <router-link v-for="e in contact?.data ? contact.data : []" :key="e._id" :to="`/message/${e._id}`"
-        class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200">
+        class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200"
+        v-show="user?._id !== e?._id">
         <div class="flex gap-2 items-center">
           <img src="/images/profile.svg" alt="Profile" class="md:w-16 md:h-16 w-8 h-8" />
           <div class="flex flex-col">

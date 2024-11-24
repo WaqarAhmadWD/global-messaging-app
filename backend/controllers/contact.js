@@ -1,5 +1,5 @@
 const contact = require("../models/contact.js");
-
+const Message = require("../models/message.js");
 const { validationResult } = require("express-validator");
 const Auth = require("../models/auth.js");
 // create contact
@@ -41,10 +41,65 @@ exports.createContact = async (req, res) => {
 // get all contact
 exports.getContacts = async (req, res) => {
   try {
-    const contacts = await contact.find({ userId: req.user.id });
+    const contacts = await contact.find({ userId: req.user._id });
+    const messages = await Message.find({
+      $or: [{ userId: req.user?.id }, { receiver: req.user?.id }],
+    })
+      .populate({
+        path: "userId",
+        match: { visibilityType: "public" },
+        select: "name userId visibilityType",
+      })
+      .populate({
+        path: "receiver",
+        match: { visibilityType: "public" },
+        select: "name userId visibilityType",
+      })
+      .sort({ _id: -1 }); // Sort by most recent messages (based on MongoDB `_id`)
+
+    // Use a Map to store the most recent message for each unique user
+    const userMessages = new Map();
+
+    messages.forEach((message) => {
+      // Handle userId
+      if (message.userId) {
+        const key = message.userId.userId; // Unique user identifier
+        if (!userMessages.has(key)) {
+          userMessages.set(key, {
+            user: {
+              _id: message.userId._id,
+              userId: message.userId.userId,
+              name: message.userId.name,
+            },
+            message: message.message,
+          });
+        }
+      }
+
+      // Handle receiver
+      if (message.receiver) {
+        const key = message.receiver.userId; // Unique receiver identifier
+        if (!userMessages.has(key)) {
+          userMessages.set(key, {
+            user: {
+              _id: message.receiver._id,
+              userId: message.receiver.userId,
+              name: message.receiver.name,
+            },
+            message: message.message,
+          });
+        }
+      }
+    });
+
+    // Convert the Map to an array of unique users with their last messages
+    const uniqueUserMessages = Array.from(userMessages.values());
+
+    console.log(uniqueUserMessages);
+
     return res.status(200).json({
       message: "personal contact fetched successfully",
-      data: contacts,
+      data: uniqueUserMessages,
     });
   } catch (error) {
     res.status(500).json({
@@ -52,6 +107,7 @@ exports.getContacts = async (req, res) => {
     });
   }
 };
+
 // get contact by id
 exports.getContactDetailsById = async (req, res) => {
   try {

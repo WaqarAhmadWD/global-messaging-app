@@ -22,7 +22,7 @@ exports.sendMessage = async (req, res) => {
         errors: { msg: "User does not exist!" },
       });
     }
-    const messageResponse = Message.create({
+    const messageResponse = await Message.create({
       message,
       receiver: req.params.id,
       userId: req.user?.id,
@@ -34,6 +34,7 @@ exports.sendMessage = async (req, res) => {
     }
     res.status(200).json({
       message: `Message sent successfully from ${req.user?.id} user to ${req.params.id} `,
+      data: messageResponse,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: true, errors: error });
