@@ -34,7 +34,7 @@ const router = createRouter({
     },
     // message
     {
-      path: "/message/:id",
+      path: "/message/:name/:id",
       name: "message",
       component: () => import("@/views/message/message.vue"),
       props: true,
@@ -54,7 +54,11 @@ const router = createRouter({
   ],
 });
 router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("Authorization");
   const store = useGeneralStore();
+
+  if (to.path === "/" && !token) next("/public");
+
   if (to.meta && to.meta.layout) {
     store.layout = to.meta.layout;
   } else {

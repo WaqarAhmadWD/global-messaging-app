@@ -2,8 +2,7 @@
   <div>
     <!-- Chat Container -->
     <div ref="chatContainer" class="mt-[6rem]  overflow-y-auto lg:h-[calc(100vh-12rem)] h-[calc(100vh-16rem)]"
-      @scroll="handleScroll">
-      <!-- Messages -->
+      v-if="messageList">
       <div v-for="message in messageList?.data ? messageList.data : []" :key="message._id"
         class="p-4 grid items-center w-full">
         <div v-if="message.receiver === props?.id" class="flex gap-2 items-center justify-self-end">
@@ -20,6 +19,23 @@
         </div>
       </div>
     </div>
+    <div v-else-if="message?.length < 1" class="w-full flex justify-center items-center text-2xl font-bold h-[50vh]">
+      No public contact yet
+    </div>
+    <div v-else class="w-full animate-pulse grid gap-2 pt-16  p-4 ">
+      <div class="lg:h-12 h-8 w-[30%] bg-gray-200 rounded-full dark:bg-gray-700 lg:mb-2  justify-self-start">
+      </div>
+      <div class="lg:h-12 h-8 w-[40%] bg-gray-200 rounded-full dark:bg-gray-700 lg:mb-2  justify-self-end">
+      </div>
+      <div class="lg:h-12 h-8 w-1/2 bg-gray-200 rounded-full dark:bg-gray-700 lg:mb-2  justify-self-start">
+      </div>
+      <div class="lg:h-12 h-8 w-[30%] bg-gray-200 rounded-full dark:bg-gray-700 lg:mb-2  justify-self-end">
+      </div>
+      <div class="lg:h-12 h-8 w-[80%] bg-gray-200 rounded-full dark:bg-gray-700 lg:mb-2  justify-self-start">
+      </div>
+
+      <span class="sr-only">Loading...</span>
+    </div>
 
     <!-- Input Form -->
     <form @submit.prevent="submit"
@@ -28,7 +44,7 @@
         <input type="text" class="w-full border-none outline-none grow bg-transparent pl-4" v-model="message"
           placeholder="Message Here!">
         <img src="/images/attach.svg" alt="" class="w-6 h-6 mr-2">
-        <button class="p-2 bg-[#A052C6] rounded-full" type="submit">
+        <button class="p-2 rounded-full" :class="[message ? 'bg-[#A052C6]' : 'bg-gray-900']" type="submit">
           <img src="/images/send.svg" alt="" class="md:w-6 md:h-6">
         </button>
       </div>
@@ -38,7 +54,6 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
 import { useApiStore } from '@/stores/apiStore';
 import { socket } from "@/socket";
 
@@ -55,12 +70,16 @@ const props = defineProps({
   id: {
     type: String,
     required: true
+  },
+  name: {
+    type: String,
+    required: true
   }
 });
 
 // Fetch data
-const fetchData = async (message = true, loading = true) => {
-  const result = await store.fetchData({ url: `/message/get/${props?.id}`, loading, message });
+const fetchData = async (cache = null, refresh = false) => {
+  const result = await store.fetchData({ url: `/message/get/${props?.id}`, cache, refresh });
   if (messageList.value?.data?.length === 0) {
     // Scroll to bottom after the first load
     nextTick(() => scrollToBottom());
@@ -76,12 +95,12 @@ const scrollToBottom = () => {
 };
 
 // Handle scroll event
-const handleScroll = async () => {
-  if (chatContainer.value.scrollTop === 0) {
-    // Load older messages when scrolled to the top
-    await fetchOlderMessages();
-  }
-};
+// const handleScroll = async () => {
+//   if (chatContainer.value.scrollTop === 0) {
+//     // Load older messages when scrolled to the top
+//     await fetchOlderMessages();
+//   }
+// };
 
 // Fetch older messages
 const fetchOlderMessages = async () => {
@@ -93,7 +112,7 @@ const fetchOlderMessages = async () => {
 
 // On mounted
 onMounted(async () => {
-  await fetchData();
+  await fetchData(`message-${props?.id}`, false);
   // Scroll to the bottom initially
   nextTick(() => scrollToBottom());
 });
@@ -102,7 +121,7 @@ onMounted(async () => {
 socket.on("message", async () => {
   console.log("Message received");
   if (fetchData) {
-    await fetchData(false, false);
+    await fetchData(`message-${props?.id}`, true);
     nextTick(() => scrollToBottom());
   } else {
     console.error("fetchData is undefined");
@@ -113,7 +132,7 @@ socket.on("message", async () => {
 const submit = async () => {
   if (message.value && props?.id) {
     await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value }, message: false, loading: false });
-    socket.emit("message", props?.id);
+    socket.emit("message", { id: props?.id, name: props?.name });
     message.value = '';
     await fetchData(false, false);
     nextTick(() => scrollToBottom());

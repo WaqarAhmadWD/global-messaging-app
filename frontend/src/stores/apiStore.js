@@ -4,6 +4,8 @@ import axiosApisInstance from "@/server/axiosApisInstance.js";
 import Swal from "sweetalert2";
 
 export const useApiStore = defineStore("useApiStore", () => {
+  // states
+  const history = ref({});
   // Function to show messages using Swal
   const showMessage = (color, message, timer = 3000) => {
     Swal.fire({
@@ -26,11 +28,17 @@ export const useApiStore = defineStore("useApiStore", () => {
     method = "GET",
     data = null,
     type = "json",
-    message = true,
+    message = false,
     error = true,
-    loading = true,
+    loading = false,
     throwMe = null,
+    showMe = null,
+    cache = null,
+    refresh = false,
   }) => {
+    if (cache && history.value[cache] && !refresh) {
+      return history.value[cache];
+    }
     if (loading) {
       showMessage(
         "loading",
@@ -40,6 +48,10 @@ export const useApiStore = defineStore("useApiStore", () => {
     }
     if (throwMe) {
       showMessage("error", throwMe === true ? "Image is required" : throwMe);
+      return;
+    }
+    if (showMe) {
+      showMessage("success", showMe === true ? "Acknowledged" : showMe);
       return;
     }
     if (!url) {
@@ -96,7 +108,9 @@ export const useApiStore = defineStore("useApiStore", () => {
         return { error: response.data.error };
       }
       if (message) showMessage("success", response.data.message, 3000);
-
+      if (cache) {
+        history.value[cache] = response.data;
+      }
       return response.data;
     } catch (err) {
       const { status, data } = err.response || {};

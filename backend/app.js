@@ -64,15 +64,15 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 io.on("connection", (socket) => {
-  socket.on("joinRoom", (id) => {
-    socket.join(id);
-    console.log(`Socket joined room: ${id}`);
+  socket.on("joinRoom", (payload) => {
+    socket.join(payload?.id);
+    console.log(`Socket joined room: ${payload?.id}`);
   });
   console.log("a user connected", socket.id);
   // You can handle events here
-  socket.on("message", (id) => {
-    console.log("here is message data:", id);
-    socket.to(id).emit("message", id);
+  socket.on("message", (payload) => {
+    console.log("here is message data:", payload);
+    socket.to(payload?.id).emit("message", payload);
   });
 
   socket.on("disconnect", () => {

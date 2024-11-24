@@ -59,7 +59,7 @@ const formModel = async (data) => {
 </script>
 
 <template>
-  <div class="lg:w-[75rem] md:w-[83.3%] px-8 pt-[1.875em] mx-auto">
+  <div class="lg:w-[75rem] md:w-[83.3%] px-8 pt-[1.875em] mx-auto" v-if="fields && model">
     <img src="/images/logo.svg" alt="Logo" class="w-[7.75rem] md:mx-8" />
 
     <div class="flex justify-between md:gap-[5.9375rem] md:p-8">
@@ -72,7 +72,6 @@ const formModel = async (data) => {
           </p>
         </div>
 
-        <!-- Form Component -->
         <FormD :model="model" :fields="fields" :onSubmit="formModel"
           :custom_className="{ main: 'flex flex-col gap-4' }">
           <template #rest>
@@ -108,6 +107,10 @@ const formModel = async (data) => {
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div v-else class="h-screen w-screen flex justify-center items-center animate-pulse ">
+    <div class="h-[70vh] w-[70vw] bg-gray-200 rounded-xl dark:bg-gray-700 lg:mb-2  justify-self-start">
     </div>
   </div>
 </template>

@@ -6,17 +6,18 @@ import Auth from "@/layouts/auth.vue";
 import App from "@/layouts/app.vue";
 const store = useGeneralStore();
 import { useApiStore } from "@/stores/apiStore";
-const storeApi = useApiStore();
+const apiStore = useApiStore();
+
 const layout = computed(() => {
   return store.layout === "auth" ? Auth : App;
 })
-socket.on("message", async () => {
-  await fetchData(false, false);
-  nextTick(() => scrollToBottom());
+socket.on("message", async (payload) => {
+  apiStore.fetchData({ url: "/contact/get", cache: "contact", refresh: true })
+  apiStore.fetchData({ showMe: `${payload.name} messaged you` });
 });
 onMounted(() => {
   const user = JSON.parse(localStorage.getItem("user"));
-  socket.emit("joinRoom", user?._id);
+  socket.emit("joinRoom", { id: user?._id });
 });
 </script>
 

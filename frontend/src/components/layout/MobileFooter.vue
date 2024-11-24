@@ -24,7 +24,7 @@ const data = [
   { id: 1, url: "/1", img: "/images/grou_chats.svg", title: "Group Chats" },
   { id: 2, url: "/2", img: "/images/stores.svg", title: "Stories" },
   { id: 3, url: "/public", img: "/images/chat_requests.svg", title: "Public Acc" },
-  { id: 4, url: "/3", img: "/images/more.svg", title: "More" },
+  { id: 4, url: "/auth/login", img: "/images/more.svg", title: "More" },
 ];
 </script>
 

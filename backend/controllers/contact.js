@@ -59,9 +59,11 @@ exports.getContacts = async (req, res) => {
 
     // Use a Map to store the most recent message for each unique user
     const userMessages = new Map();
+    let notification = 0;
 
     messages.forEach((message) => {
       // Handle userId
+      if (!message?.isSeen) notification++;
       if (message.userId) {
         const key = message.userId.userId; // Unique user identifier
         if (!userMessages.has(key)) {
@@ -72,6 +74,7 @@ exports.getContacts = async (req, res) => {
               name: message.userId.name,
             },
             message: message.message,
+            notification: notification,
           });
         }
       }
@@ -86,7 +89,8 @@ exports.getContacts = async (req, res) => {
               userId: message.receiver.userId,
               name: message.receiver.name,
             },
-            message: message.message,
+            message: `me: ${message.message}`,
+            notification: notification,
           });
         }
       }
@@ -94,8 +98,6 @@ exports.getContacts = async (req, res) => {
 
     // Convert the Map to an array of unique users with their last messages
     const uniqueUserMessages = Array.from(userMessages.values());
-
-    console.log(uniqueUserMessages);
 
     return res.status(200).json({
       message: "personal contact fetched successfully",
