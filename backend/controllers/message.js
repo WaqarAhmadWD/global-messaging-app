@@ -42,13 +42,19 @@ exports.sendMessage = async (req, res) => {
 };
 exports.getMessage = async (req, res) => {
   try {
-    // Fetch messages where the user is either the sender or receiver
-    const messages = await Message.find({
+    // Query to find messages where the user is either the sender or receiver
+    const query = {
       $or: [
         { userId: req.user?.id, receiver: req.params.id },
         { receiver: req.user?.id, userId: req.params.id },
       ],
-    });
+    };
+
+    // Update `isSeen` to true for all matching messages
+    await Message.updateMany(query, { $set: { isSeen: true } });
+
+    // Fetch the updated messages
+    const messages = await Message.find(query);
 
     // Check if any messages were found
     if (!messages || messages.length === 0) {
@@ -58,12 +64,12 @@ exports.getMessage = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "message fetched successfully!",
+      message: "Messages fetched successfully!",
       data: messages,
     });
   } catch (error) {
     res.status(500).json({
-      message: "something went wrong",
+      message: "Something went wrong",
       errors: error,
     });
   }

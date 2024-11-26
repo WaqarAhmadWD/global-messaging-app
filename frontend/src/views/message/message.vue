@@ -56,7 +56,9 @@
 import { ref, onMounted, nextTick } from 'vue';
 import { useApiStore } from '@/stores/apiStore';
 import { socket } from "@/socket";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 // Reactive state
 const messageList = ref(null);
 const message = ref(null);
@@ -80,6 +82,8 @@ const props = defineProps({
 // Fetch data
 const fetchData = async (cache = null, refresh = false) => {
   const result = await store.fetchData({ url: `/message/get/${props?.id}`, cache, refresh });
+  if (route?.query?.notification > 0)
+    await store.fetchData({ url: `/message/get/${props?.id}`, cache: "contact", refresh: true })
   if (messageList.value?.data?.length === 0) {
     // Scroll to bottom after the first load
     nextTick(() => scrollToBottom());
@@ -131,7 +135,7 @@ socket.on("message", async () => {
 // Handle form submit
 const submit = async () => {
   if (message.value && props?.id) {
-    await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value }, message: false, loading: false });
+    await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value } });
     socket.emit("message", { id: props?.id, name: props?.name });
     message.value = '';
     await fetchData(false, false);

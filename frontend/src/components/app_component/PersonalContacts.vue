@@ -30,7 +30,8 @@ socket.on("message", async () => {
   <div>
     <div class="bg-[#5F5F5F] h-[1px]"></div>
     <div v-if="contact">
-      <router-link v-for="e in contact" :key="e.user._id" :to="`/message/${e?.user?.name}/${e?.user._id}`"
+      <router-link v-for="e in contact" :key="e.user._id"
+        :to="`/message/${e?.user?.name}/${e?.user._id}/?notification=${e?.notification}`"
         class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200"
         v-show="user?._id !== e.user?._id">
 

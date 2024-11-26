@@ -38,9 +38,10 @@ exports.createContact = async (req, res) => {
   }
 };
 
-// get all contact
+// Get all contacts
 exports.getContacts = async (req, res) => {
   try {
+    // Fetch contacts and messages
     const contacts = await contact.find({ userId: req.user._id });
     const messages = await Message.find({
       $or: [{ userId: req.user?.id }, { receiver: req.user?.id }],
@@ -57,42 +58,46 @@ exports.getContacts = async (req, res) => {
       })
       .sort({ _id: -1 }); // Sort by most recent messages (based on MongoDB `_id`)
 
-    // Use a Map to store the most recent message for each unique user
+    // Use a Map to store the most recent message and notification count for each user
     const userMessages = new Map();
-    let notification = 0;
 
     messages.forEach((message) => {
-      // Handle userId
-      if (!message?.isSeen) notification++;
-      if (message.userId) {
-        const key = message.userId.userId; // Unique user identifier
-        if (!userMessages.has(key)) {
-          userMessages.set(key, {
-            user: {
-              _id: message.userId._id,
-              userId: message.userId.userId,
-              name: message.userId.name,
-            },
-            message: message.message,
-            notification: notification,
-          });
-        }
-      }
+      // Determine if the message is from the user or to the user
+      const key =
+        message.userId?.userId === req.user?.id
+          ? message.receiver?.userId
+          : message.userId?.userId;
 
-      // Handle receiver
-      if (message.receiver) {
-        const key = message.receiver.userId; // Unique receiver identifier
-        if (!userMessages.has(key)) {
-          userMessages.set(key, {
-            user: {
-              _id: message.receiver._id,
-              userId: message.receiver.userId,
-              name: message.receiver.name,
-            },
-            message: `me: ${message.message}`,
-            notification: notification,
-          });
+      if (!key) return; // Skip if no valid user ID
+
+      // Initialize or update entry in the Map
+      if (!userMessages.has(key)) {
+        userMessages.set(key, {
+          user: {
+            _id: message.userId?._id || message.receiver?._id,
+            userId: key,
+            name: message.userId?.name || message.receiver?.name,
+          },
+          message:
+            message.userId?.userId === req.user?.id
+              ? `me: ${message.message}` // Outgoing message
+              : message.message, // Incoming message
+          notification: message.isSeen ? 0 : 1, // Start with 1 if not seen
+        });
+      } else {
+        const userEntry = userMessages.get(key);
+
+        // Update the most recent message
+        if (message.userId?.userId !== req.user?.id) {
+          userEntry.message = message.message; // Incoming message
         }
+
+        // Increment notification count if not seen
+        if (!message.isSeen) {
+          userEntry.notification++;
+        }
+
+        userMessages.set(key, userEntry);
       }
     });
 
