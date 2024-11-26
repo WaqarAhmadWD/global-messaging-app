@@ -5,17 +5,19 @@
       v-if="messageList">
       <div v-for="message in messageList?.data ? messageList.data : []" :key="message._id"
         class="p-4 grid items-center w-full">
-        <div v-if="message.receiver === props?.id" class="flex gap-2 items-center justify-self-end">
-          <div class="bg-gray-700 px-4 py-2 rounded-full">
-            {{ message?.message }}
-          </div>
+
+        <div v-if="message?.userId?._id !== user?._id" class="flex gap-2 items-center justify-self-start">
           <img src="/images/profile.svg" alt="" class="w-8 h-8">
+          <div class="bg-gray-700 px-4 py-2 rounded-full">
+
+            {{ message?.userId?.name }} - {{ message?.message }}
+          </div>
         </div>
-        <div v-else class="flex gap-2 items-center justify-self-start">
-          <img src="/images/profile.svg" alt="" class="w-8 h-8">
+        <div v-else class="flex gap-2 items-center justify-self-end">
           <div class="bg-gray-700 px-4 py-2 rounded-full">
-            {{ message?.message }}
+            {{ message?.userId?.name }} - {{ message?.message }}
           </div>
+          <img src="/images/profile.svg" alt="" class="w-8 h-8">
         </div>
       </div>
     </div>
@@ -67,21 +69,9 @@ const chatContainer = ref(null);
 // Route and store
 const store = useApiStore();
 
-// Props
-const props = defineProps({
-  id: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  }
-});
-
 // Fetch data
 const fetchData = async (cache = null, refresh = false) => {
-  const result = await store.fetchData({ url: `/message/get/${props?.id}`, cache, refresh });
+  const result = await store.fetchData({ url: `/message/get`, cache, refresh });
   if (messageList.value?.data?.length === 0) {
     // Scroll to bottom after the first load
     nextTick(() => scrollToBottom());
@@ -99,31 +89,18 @@ const scrollToBottom = () => {
 
 
 // On mounted
+const user = ref(null);
 onMounted(async () => {
-  await fetchData(`message-${props?.id}`, false);
-  if (route?.query?.notification > 0)
-    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
-
+  await fetchData();
+  user.value = JSON.parse(localStorage.getItem("user"));
   nextTick(() => scrollToBottom());
 });
 
-// Handle new messages
-socket.on("message", async () => {
-  console.log("Message received");
-  if (fetchData) {
-    await fetchData(`message-${props?.id}`, true);
-    nextTick(() => scrollToBottom());
-  } else {
-    console.error("fetchData is undefined");
-  }
-});
 
 // Handle form submit
 const submit = async () => {
-  if (message.value && props?.id) {
-    await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value } });
-    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
-    socket.emit("message", { id: props?.id, name: props?.name });
+  if (message.value) {
+    await store.fetchData({ url: `/message/send`, method: "POST", data: { message: message.value } });
     message.value = '';
     await fetchData(false, false);
     nextTick(() => scrollToBottom());

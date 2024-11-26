@@ -13,7 +13,7 @@ const chats = [
   { id: 2, url: "/2", img: "/images/stores.svg", title: "Stories" },
   { id: 3, url: "/Public", img: "/images/chat_requests.svg", title: "Public" },
   { id: 4, url: "/3", img: "/images/archive.svg", title: "Archive" },
-  { id: 5, url: "/4", img: "/images/globe.svg", title: "Public Club" },
+  { id: 5, url: "/message-club", img: "/images/globe.svg", title: "Public Club" },
 ];
 </script>
 

@@ -39,6 +39,12 @@ const router = createRouter({
       component: () => import("@/views/message/message.vue"),
       props: true,
     },
+    {
+      path: "/message-club",
+      name: "messageClub",
+      component: () => import("@/views/message/messageClub.vue"),
+      props: true,
+    },
     // public
     {
       path: "/public",

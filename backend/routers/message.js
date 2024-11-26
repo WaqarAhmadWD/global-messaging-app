@@ -13,4 +13,15 @@ router.post(
 );
 // get all messages from one user
 router.get("/get/:id", middleware.tokenValidator, controller.getMessage);
+
+// send one message
+router.post(
+  "/send",
+  middleware.tokenValidator,
+  [body("message").notEmpty().withMessage("Message must not be empty")],
+  controller.sendMessageClub
+);
+// get all messages from one user
+router.get("/get", middleware.tokenValidator, controller.getMessageClub);
+
 module.exports = router;

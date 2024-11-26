@@ -1,4 +1,5 @@
 const Message = require("../models/message.js");
+const messageClubModel = require("../models/messageClub.js");
 const { validationResult } = require("express-validator");
 const Auth = require("../models/auth.js");
 const Contact = require("../models/contact.js");
@@ -114,6 +115,46 @@ exports.getMessage = async (req, res) => {
     res.status(500).json({
       message: "Something went wrong",
       errors: error,
+    });
+  }
+};
+exports.sendMessageClub = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const messageResponse = await messageClubModel.create({
+      message,
+      userId: req.user?.id,
+    });
+
+    if (!messageResponse) {
+      return res.status(400).json({
+        message: "Failed to send message",
+      });
+    }
+    return res.status(200).json({
+      message: "message sent successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};
+exports.getMessageClub = async (req, res) => {
+  try {
+    const messageResponse = await messageClubModel.find().populate("userId");
+    if (!messageResponse) {
+      return res.status(201).json({
+        message: "No message yet",
+      });
+    }
+    return res.status(200).json({
+      message: "all messaged fetched successfully",
+      data: messageResponse,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
     });
   }
 };

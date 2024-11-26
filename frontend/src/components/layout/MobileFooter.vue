@@ -21,7 +21,7 @@ const currentPath = computed(() => route.path);
 // Footer data
 const data = [
   { id: 0, url: "/", img: "/images/all_chats.svg", title: "All Chats" },
-  { id: 1, url: "/1", img: "/images/grou_chats.svg", title: "Group Chats" },
+  { id: 1, url: "/message-club", img: "/images/grou_chats.svg", title: "Club" },
   { id: 2, url: "/2", img: "/images/stores.svg", title: "Stories" },
   { id: 3, url: "/public", img: "/images/chat_requests.svg", title: "Public Acc" },
   { id: 4, url: "/auth/login", img: "/images/more.svg", title: "More" },
