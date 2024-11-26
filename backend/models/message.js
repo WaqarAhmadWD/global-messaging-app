@@ -7,9 +7,5 @@ const message = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "auth",
   },
-  isSeen: {
-    type: Boolean,
-    default: false,
-  },
 });
 module.exports = mongoose.model("message", message);

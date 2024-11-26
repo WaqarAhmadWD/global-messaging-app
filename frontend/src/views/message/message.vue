@@ -82,8 +82,6 @@ const props = defineProps({
 // Fetch data
 const fetchData = async (cache = null, refresh = false) => {
   const result = await store.fetchData({ url: `/message/get/${props?.id}`, cache, refresh });
-  if (route?.query?.notification > 0)
-    await store.fetchData({ url: `/message/get/${props?.id}`, cache: "contact", refresh: true })
   if (messageList.value?.data?.length === 0) {
     // Scroll to bottom after the first load
     nextTick(() => scrollToBottom());
@@ -98,26 +96,12 @@ const scrollToBottom = () => {
   }
 };
 
-// Handle scroll event
-// const handleScroll = async () => {
-//   if (chatContainer.value.scrollTop === 0) {
-//     // Load older messages when scrolled to the top
-//     await fetchOlderMessages();
-//   }
-// };
-
-// Fetch older messages
-const fetchOlderMessages = async () => {
-  const olderMessages = await store.fetchData({ url: `/message/get/${props?.id}?before=${messageList.value.data[0]._id}` });
-  if (olderMessages.data?.length) {
-    messageList.value.data.unshift(...olderMessages.data);
-  }
-};
-
 // On mounted
 onMounted(async () => {
   await fetchData(`message-${props?.id}`, false);
-  // Scroll to the bottom initially
+  if (route?.query?.notification > 0)
+    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
+
   nextTick(() => scrollToBottom());
 });
 
@@ -136,6 +120,7 @@ socket.on("message", async () => {
 const submit = async () => {
   if (message.value && props?.id) {
     await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value } });
+    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
     socket.emit("message", { id: props?.id, name: props?.name });
     message.value = '';
     await fetchData(false, false);

@@ -9,7 +9,7 @@ const apiStore = useApiStore(); // Access the store
 const fetchContacts = async (cache = null) => {
   try {
     const result = await apiStore.fetchData({ url: "/contact/get", cache });
-    contact.value = result.data;
+    contact.value = result;
   } catch (error) {
     console.error("Failed to fetch contacts:", error);
   }
@@ -29,22 +29,21 @@ socket.on("message", async () => {
 <template>
   <div>
     <div class="bg-[#5F5F5F] h-[1px]"></div>
-    <div v-if="contact">
-      <router-link v-for="e in contact" :key="e.user._id"
-        :to="`/message/${e?.user?.name}/${e?.user._id}/?notification=${e?.notification}`"
-        class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200"
-        v-show="user?._id !== e.user?._id">
+    <div v-if="contact?.data">
+      <router-link v-for="e in contact.data" :key="e._id"
+        :to="`/message/${e?.name}/${e?.contactId}/?notification=${e?.notifications}`"
+        class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200">
 
         <div class="flex gap-2 items-center">
           <img src="/images/profile.svg" alt="Profile" class="md:w-16 md:h-16 w-8 h-8" />
           <div class="flex flex-col">
-            <h1 class="text-lg font-semibold">{{ e.user.name }}
+            <h1 class="text-lg font-semibold">{{ e?.name }}
             </h1>
-            <p class="text-sm md:text-md">{{ e.message }}</p>
+            <p class="text-sm md:text-md">{{ e?.recent }}</p>
           </div>
         </div>
         <div class="flex gap-4 items-center">
-          <NotificationCounter :Notif="e?.notification" />
+          <NotificationCounter :Notif="e?.notifications" />
           <img src="/images/menu.svg" alt="Menu" class="h-1" />
         </div>
       </router-link>

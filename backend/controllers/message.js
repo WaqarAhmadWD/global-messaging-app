@@ -1,6 +1,7 @@
 const Message = require("../models/message.js");
 const { validationResult } = require("express-validator");
 const Auth = require("../models/auth.js");
+const Contact = require("../models/contact.js");
 exports.sendMessage = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -11,9 +12,9 @@ exports.sendMessage = async (req, res) => {
         .join(", "),
     });
   }
-  const { message } = req.body;
 
   try {
+    const { message } = req.body;
     const user = await Auth.findById(req.params.id);
     if (!user) {
       return res.status(404).json({
@@ -27,9 +28,41 @@ exports.sendMessage = async (req, res) => {
       receiver: req.params.id,
       userId: req.user?.id,
     });
+
     if (!messageResponse) {
       return res.status(400).json({
         message: "Failed to send message",
+      });
+    }
+    const MyContactUpdated = await Contact.findOneAndUpdate(
+      { $and: [{ userId: req.user.id }, { contactId: req.params.id }] },
+      {
+        $set: {
+          recent: `me: ${message}`,
+          name: user.name,
+          userId: req.user.id,
+          contactId: req.params.id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    const HisContactUpdated = await Contact.findOneAndUpdate(
+      { $and: [{ contactId: req.user.id }, { userId: req.params.id }] },
+      {
+        $set: {
+          recent: message,
+          name: user.name,
+          contactId: req.user.id,
+          userId: req.params.id,
+        },
+        $inc: { notifications: 1 },
+      },
+      { upsert: true, new: true }
+    );
+    if (!MyContactUpdated || !HisContactUpdated) {
+      return res.status(400).json({
+        message: "Failed to update contacts",
       });
     }
     res.status(200).json({
@@ -50,9 +83,6 @@ exports.getMessage = async (req, res) => {
       ],
     };
 
-    // Update `isSeen` to true for all matching messages
-    await Message.updateMany(query, { $set: { isSeen: true } });
-
     // Fetch the updated messages
     const messages = await Message.find(query);
 
@@ -60,6 +90,19 @@ exports.getMessage = async (req, res) => {
     if (!messages || messages.length === 0) {
       return res.status(200).json({
         message: "No messages found",
+      });
+    }
+    const MyContactUpdated = await Contact.findOneAndUpdate(
+      { $and: [{ userId: req.user.id }, { contactId: req.params.id }] },
+      {
+        $set: {
+          notifications: 0,
+        },
+      }
+    );
+    if (!MyContactUpdated) {
+      res.status(500).json({
+        message: "Failed while updating your contact!",
       });
     }
 

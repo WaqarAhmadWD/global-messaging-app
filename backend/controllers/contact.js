@@ -1,7 +1,9 @@
-const contact = require("../models/contact.js");
-const Message = require("../models/message.js");
+const Contact = require("../models/contact.js");
 const { validationResult } = require("express-validator");
 const Auth = require("../models/auth.js");
+const Message = require("../models/message.js");
+const mongoose = require("mongoose");
+
 // create contact
 exports.createContact = async (req, res) => {
   const errors = validationResult(req);
@@ -23,7 +25,10 @@ exports.createContact = async (req, res) => {
         errors: { msg: "User does not exists!" },
       });
     }
-    const checkUser = await contact.findOne({ userId: req.user.id, contactId });
+    const checkUser = await Contact.findOne({
+      userId: req.user.id,
+      contactId: user._id,
+    });
     if (checkUser) {
       return res.status(204).json({
         success: false,
@@ -31,82 +36,27 @@ exports.createContact = async (req, res) => {
         errors: { msg: "You have already this contact!" },
       });
     }
-    const cont = await contact.create({ name, userId: req.user.id, contactId });
+    const cont = await Contact.create({ name, userId: req.user.id, contactId });
     res.status(200).json({ success: true, error: false, data: cont });
   } catch (error) {
     res.status(500).json({ success: false, error: true, errors: error });
   }
 };
 
+// get all contact
+// Get all contacts
 // Get all contacts
 exports.getContacts = async (req, res) => {
   try {
-    // Fetch contacts and messages
-    const contacts = await contact.find({ userId: req.user._id });
-    const messages = await Message.find({
-      $or: [{ userId: req.user?.id }, { receiver: req.user?.id }],
-    })
-      .populate({
-        path: "userId",
-        match: { visibilityType: "public" },
-        select: "name userId visibilityType",
-      })
-      .populate({
-        path: "receiver",
-        match: { visibilityType: "public" },
-        select: "name userId visibilityType",
-      })
-      .sort({ _id: -1 }); // Sort by most recent messages (based on MongoDB `_id`)
-
-    // Use a Map to store the most recent message and notification count for each user
-    const userMessages = new Map();
-
-    messages.forEach((message) => {
-      // Determine if the message is from the user or to the user
-      const key =
-        message.userId?.userId === req.user?.id
-          ? message.receiver?.userId
-          : message.userId?.userId;
-
-      if (!key) return; // Skip if no valid user ID
-
-      // Initialize or update entry in the Map
-      if (!userMessages.has(key)) {
-        userMessages.set(key, {
-          user: {
-            _id: message.userId?._id || message.receiver?._id,
-            userId: key,
-            name: message.userId?.name || message.receiver?.name,
-          },
-          message:
-            message.userId?.userId === req.user?.id
-              ? `me: ${message.message}` // Outgoing message
-              : message.message, // Incoming message
-          notification: message.isSeen ? 0 : 1, // Start with 1 if not seen
-        });
-      } else {
-        const userEntry = userMessages.get(key);
-
-        // Update the most recent message
-        if (message.userId?.userId !== req.user?.id) {
-          userEntry.message = message.message; // Incoming message
-        }
-
-        // Increment notification count if not seen
-        if (!message.isSeen) {
-          userEntry.notification++;
-        }
-
-        userMessages.set(key, userEntry);
-      }
-    });
-
-    // Convert the Map to an array of unique users with their last messages
-    const uniqueUserMessages = Array.from(userMessages.values());
-
+    const contact = await Contact.find({ userId: req.user.id });
+    if (!contact) {
+      return res.status(404).json({
+        message: "No contact Found by your Id",
+      });
+    }
     return res.status(200).json({
       message: "personal contact fetched successfully",
-      data: uniqueUserMessages,
+      data: contact,
     });
   } catch (error) {
     res.status(500).json({
@@ -118,7 +68,7 @@ exports.getContacts = async (req, res) => {
 // get contact by id
 exports.getContactDetailsById = async (req, res) => {
   try {
-    const user = await contact.findOne({
+    const user = await Contact.findOne({
       userId: req.user.id,
       contactId: req.params.id,
     });
@@ -168,7 +118,7 @@ exports.editContact = async (req, res) => {
       });
     }
 
-    const user = await contact.findOne({
+    const user = await Contact.findOne({
       userId: req.user.id,
       contactId: req.params.id,
     });
@@ -203,7 +153,7 @@ exports.editContact = async (req, res) => {
 // delete contact
 exports.deleteContact = async (req, res) => {
   try {
-    const user = await contact.findOne({
+    const user = await Contact.findOne({
       userId: req.user.id,
       contactId: req.params.id,
     });
@@ -214,7 +164,7 @@ exports.deleteContact = async (req, res) => {
         data: { msg: "user does not exist!" },
       });
     }
-    await contact.findOneAndDelete({
+    await Contact.findOneAndDelete({
       userId: req.user.id,
       contactId: req.params.id,
     });
