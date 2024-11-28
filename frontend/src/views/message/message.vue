@@ -63,6 +63,7 @@ const route = useRoute();
 const messageList = ref(null);
 const message = ref(null);
 const chatContainer = ref(null);
+const user = ref(null);
 
 // Route and store
 const store = useApiStore();
@@ -80,12 +81,8 @@ const props = defineProps({
 });
 
 // Fetch data
-const fetchData = async (cache = null, refresh = false) => {
+const fetchData = async (cache = null, refresh = false,) => {
   const result = await store.fetchData({ url: `/message/get/${props?.id}`, cache, refresh });
-  if (messageList.value?.data?.length === 0) {
-    // Scroll to bottom after the first load
-    nextTick(() => scrollToBottom());
-  }
   messageList.value = result;
 };
 
@@ -95,15 +92,43 @@ const scrollToBottom = () => {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
   }
 };
+const finished = ref(false);
+const handleScroll = async () => {
+  if (finished.value) {
+    return;
+  }
+  if (chatContainer.value.scrollTop === 0) {
+    console.log("Reached the top of the chat!");
+    const result = await store.fetchData({
+      url: `/message/get/${props?.id}?skip=${messageList?.value?.data?.length}`,
+      method: "GET",
+    });
+    if (result && result.data) {
+      messageList.value.data = [...result.data, ...messageList.value.data]; // Prepend older messages
+    } else if (result.message) {
+      finished.value = true;
+    }
+    chatContainer.value.scrollTop = 10;
+  }
+};
 
 
 
 // On mounted
 onMounted(async () => {
+  user.value = JSON.parse(localStorage.getItem("user"));
   await fetchData(`message-${props?.id}`, false);
-  if (route?.query?.notification > 0)
-    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
-
+  if (route?.query?.notification > 0) {
+    const contact = await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
+    if (contact.data) {
+      store.notificationsCounter = contact.data.reduce((OldValue, NewValue) => OldValue + NewValue.notifications, 0);
+      store.notificationsList = contact.data.filter((e) => e.notifications > 0);
+      console.log(store?.notificationsCounter);
+    }
+  }
+  if (chatContainer.value) {
+    chatContainer.value.addEventListener("scroll", handleScroll);
+  }
   nextTick(() => scrollToBottom());
 });
 
@@ -112,7 +137,12 @@ socket.on("message", async () => {
   console.log("Message received");
   if (fetchData) {
     await fetchData(`message-${props?.id}`, true);
-    nextTick(() => scrollToBottom());
+    const contact = await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
+    if (contact.data) {
+      store.notificationsCounter = contact.data.reduce((OldValue, NewValue) => OldValue + NewValue.notifications, 0);
+      store.notificationsList = contact.data.filter((e) => e.notifications > 0);
+      console.log(store?.notificationsCounter);
+    }
   } else {
     console.error("fetchData is undefined");
   }
@@ -122,8 +152,12 @@ socket.on("message", async () => {
 const submit = async () => {
   if (message.value && props?.id) {
     await store.fetchData({ url: `/message/send/${props?.id}`, method: "POST", data: { message: message.value } });
-    await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
-    socket.emit("message", { id: props?.id, name: props?.name });
+    const contact = await store.fetchData({ url: "/contact/get", cache: "contact", refresh: true });
+    if (contact.data) {
+      store.notificationsCounter = contact.data.reduce((OldValue, NewValue) => OldValue + NewValue.notifications, 0);
+      store.notificationsList = contact.data.filter((e) => e.notifications > 0);
+    }
+    socket.emit("message", { id: props?.id, name: user.value?.name });
     message.value = '';
     await fetchData(false, false);
     nextTick(() => scrollToBottom());

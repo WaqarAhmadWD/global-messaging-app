@@ -47,14 +47,14 @@ const store = useApiStore();
 
 // Define form fields
 const fields = ref([
-  { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Enter your name', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true, min: 2, max: 50 } },
-  { name: 'userId', label: 'Username', type: 'text', placeholder: 'Enter your name', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true, min: 2, max: 50 } },
-  { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter your email', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true, email: true } },
-  { name: 'birthday', label: 'Birthday', type: 'date', placeholder: 'Enter your birth date', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true } },
-  { name: 'type', label: 'Account Type', type: 'select', placeholder: 'Enter type', options: [{ id: 1, name: 'private' }, { id: 2, name: 'public' }], class: 'border-2 border-gray-300 rounded-lg p-2 col-span-2', validation: { required: true } },
-  { name: 'gender', label: 'Gender', type: 'select', placeholder: 'Select your gender', options: [{ id: 1, name: 'male' }, { id: 2, name: 'female' }, { id: 3, name: 'Prefer not to say' }], class: 'border-2 border-gray-300 rounded-lg p-2 col-span-2', validation: { required: true } },
+  { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Enter your display name' },
+  { name: 'userId', label: 'Username', type: 'text', placeholder: 'Enter your username', },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'Enter your email', },
+  { name: 'birthday', label: 'Birthday', type: 'date', placeholder: 'Enter your birth date', },
+  { name: 'type', label: 'Account Type', type: 'select', placeholder: 'Enter type', options: [{ id: 'private', name: 'private' }, { id: 'public', name: 'public' }], },
+  { name: 'gender', label: 'Gender', type: 'select', placeholder: 'Select your gender', options: [{ id: 1, name: 'male' }, { id: 2, name: 'female' }, { id: 3, name: 'Prefer not to say' }], },
   { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true } },
-  { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Enter your password again', class: 'border-2 border-gray-300 rounded-lg p-2', validation: { required: true } }
+  { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: 'Enter your password again', }
 ]);
 
 // Define form data model
@@ -103,7 +103,3 @@ const formRest = {
   `
 };
 </script>
-
-<style scoped>
-/* Add any additional styles as needed */
-</style>

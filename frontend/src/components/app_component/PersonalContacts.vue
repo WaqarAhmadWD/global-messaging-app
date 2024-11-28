@@ -6,6 +6,7 @@ import { socket } from "@/socket";
 const contact = ref(null); // Reactive state for contact data
 const apiStore = useApiStore(); // Access the store
 
+
 const fetchContacts = async (cache = null) => {
   try {
     const result = await apiStore.fetchData({ url: "/contact/get", cache });

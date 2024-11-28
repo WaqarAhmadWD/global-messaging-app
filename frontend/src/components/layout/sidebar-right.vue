@@ -1,6 +1,8 @@
 <script setup>
+import Notification from "@/components/app_component/NotificationCounter.vue";
 import { ref } from "vue";
-
+import { useGeneralStore } from "@/stores/general";
+const store = useGeneralStore();
 const chats = [
   { id: 0, title: "all chats" },
   { id: 1, title: "all chats" },
@@ -10,29 +12,6 @@ const chats = [
   { id: 5, title: "all chats" },
 ];
 
-const notif = [
-  {
-    id: 1,
-    contact: "Sufyan Khan",
-    message: "Last message would appear here an...",
-  },
-  {
-    id: 2,
-    contact: "Waqar Ahmad",
-    message: "Last message would appear here an...",
-  },
-  {
-    id: 3,
-    contact: "Fayzan",
-    message: "Last message would appear here an...",
-  },
-  {
-    id: 4,
-    contact: "Usman",
-    message: "Last message would appear here an...",
-  },
-  { id: 5, contact: "Umar", message: "Last message would appear here an..." },
-];
 </script>
 
 <template>
@@ -56,15 +35,20 @@ const notif = [
       <!-- Notifications -->
       <div class="bg-[#383838] p-4 grow">
         <div class="text-[1.125rem] font-bold">Notifications</div>
-        <div v-for="e in notif" :key="e.id"
+        <div v-for="e in store?.notificationsList ? store.notificationsList : []" :key="e.id"
           class="py-2 flex justify-between hover:bg-gray-700 transition-all duration-100 rounded-xl cursor-pointer items-center">
           <div class="flex gap-2 items-center">
             <img src="/images/notification.svg" alt="Notification Icon" class="w-5" />
             <div>
-              <h1 class="font-semibold">{{ e.contact }}</h1>
-              <p class="text-sm">{{ e.message }}</p>
+              <h1 class="font-semibold">{{ e?.name }}</h1>
+              <p class="text-sm">{{ e?.recent }}</p>
             </div>
           </div>
+          <Notification :Notif="e?.notifications" />
+
+        </div>
+        <div>
+          No recent Notification
         </div>
       </div>
     </div>

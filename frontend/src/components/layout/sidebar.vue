@@ -2,19 +2,20 @@
 import { ref, computed } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import NotificationCounter from "@/components/app_component/NotificationCounter.vue";
-
+import { useGeneralStore } from "@/stores/general";
+const store = useGeneralStore();
 // Get current route path
 const route = useRoute();
 const pathname = computed(() => route.path);
 
-const chats = [
-  { id: 0, url: "/", img: "/images/all_chats.svg", title: "All Chats" },
+const chats = ref([
+  { id: 0, url: "/", img: "/images/all_chats.svg", title: "All Chats", },
   { id: 1, url: "/1", img: "/images/grou_chats.svg", title: "Group Chats" },
   { id: 2, url: "/2", img: "/images/stores.svg", title: "Stories" },
   { id: 3, url: "/Public", img: "/images/chat_requests.svg", title: "Public" },
   { id: 4, url: "/3", img: "/images/archive.svg", title: "Archive" },
   { id: 5, url: "/message-club", img: "/images/globe.svg", title: "Public Club" },
-];
+]);
 </script>
 
 <template>
@@ -34,7 +35,10 @@ const chats = [
             <img :src="e.img" alt="" class="w-4" />
             <div>{{ e.title }}</div>
           </div>
-          <NotificationCounter />
+          <div className="w-5 h-5 rounded-full bg-[#A052C6] flex justify-center items-center text-sm px-1"
+            v-if="e?.id === 0 && store?.notificationsCounter > 0">
+            {{ store?.notificationsCounter }}
+          </div>
         </RouterLink>
       </div>
 

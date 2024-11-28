@@ -76,16 +76,29 @@ exports.sendMessage = async (req, res) => {
 };
 exports.getMessage = async (req, res) => {
   try {
-    // Query to find messages where the user is either the sender or receiver
     const query = {
       $or: [
         { userId: req.user?.id, receiver: req.params.id },
         { receiver: req.user?.id, userId: req.params.id },
       ],
     };
+    const limit = 10; // Number of records to fetch
+    const skip = parseInt(req.query.skip) || 0; // Number of records to skip from the end
+    const totalFields = await Message.countDocuments(query); // Total documents matching the query
+
+    if (skip > totalFields) {
+      return res.status(201).json({
+        message: "message finished!",
+      });
+    }
+    // Calculate adjusted skip value
+    const adjustedSkip = Math.max(totalFields - skip - limit, 0);
 
     // Fetch the updated messages
-    const messages = await Message.find(query);
+    const messages = await Message.find(query)
+      .sort({ _id: 1 }) // Fetch in ascending order (oldest to newest)
+      .skip(adjustedSkip) // Skip calculated adjusted value
+      .limit(limit);
 
     // Check if any messages were found
     if (!messages || messages.length === 0) {
