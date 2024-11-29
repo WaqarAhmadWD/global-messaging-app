@@ -28,7 +28,7 @@ const corsSetting = {
   credentials: true,
 };
 
-app.use(cors(corsSetting));
+app.use(cors());
 app.use(express.json());
 
 // routers
