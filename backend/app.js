@@ -53,7 +53,7 @@ app.use("/api/dynamic", require("./routers/dynamic.js"));
 app.use((err, req, res, next) => {
   return res.status(500).json({ message: err.stack });
 });
-app.get("/uploads/:photoType/:id", async (req, res) => {
+app.get("/api/uploads/:photoType/:id", async (req, res) => {
   const { photoType, id } = req.params;
   if (!photoType || !id) {
     return res.status(404).json({

@@ -164,9 +164,9 @@ exports.editProfile = async (req, res) => {
     });
 
     if (req.file) {
-      user.profile = `${req.protocol}://${req.get("host")}/uploads/profiles/${
-        req.file.filename
-      }`;
+      user.profile = `${req.protocol}://${req.get(
+        "host"
+      )}/api/uploads/profiles/${req.file.filename}`;
     }
 
     await user.save();
