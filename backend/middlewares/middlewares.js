@@ -18,7 +18,7 @@ const tokenValidator = async (req, res, next) => {
     }
     const validator = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
     if (validator) {
-      req.user = await { id: validator };
+      req.user = await validator;
     }
     next();
   } catch (error) {

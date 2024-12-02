@@ -30,7 +30,8 @@ onMounted(() => {
         class="flex gap-2 justify-between py-4 border-b border-[#5F5F5F] px-4 mb-2 items-center hover:bg-slate-900 cursor-pointer transition-all duration-200"
         v-show="user?._id !== e?._id">
         <div class="flex gap-2 items-center">
-          <img src="/images/profile.svg" alt="Profile" class="md:w-16 md:h-16 w-8 h-8" />
+          <img :src="e?.profile ? e.profile : '/images/profile.svg'" alt="Profile"
+            class="md:w-16 md:h-16 w-8 h-8 object-cover" />
           <div class="flex flex-col">
             <h1 class="text-lg font-semibold">{{ e?.name }}</h1>
             <p class="text-sm md:text-md">{{ e?.userId }}</p>

@@ -15,6 +15,9 @@ const authSchema = new Schema({
     default: "public",
     required: true,
   },
+  profile: {
+    type: String,
+  },
 });
 
 const Auth = mongoose.model("auth", authSchema);

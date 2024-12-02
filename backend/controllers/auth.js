@@ -36,7 +36,10 @@ exports.createAccount = async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
+    const token = await jwt.sign(
+      { id: user._id, userId: user.userId },
+      process.env.TOKEN_SECRET_KEY
+    );
     res.status(201).json({
       message: "User Created Successfully",
       user: userWithoutPassword,
@@ -78,7 +81,10 @@ exports.login = async (req, res) => {
         error: "",
       });
     } else {
-      const token = await jwt.sign(user.id, process.env.TOKEN_SECRET_KEY);
+      const token = await jwt.sign(
+        { id: user._id, userId: user.userId },
+        process.env.TOKEN_SECRET_KEY
+      );
       res.status(200).json({
         message: "Login Successfully!",
         token: token,
@@ -132,6 +138,7 @@ exports.editProfile = async (req, res) => {
         .join(", "),
     });
   }
+
   try {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["name", "visibilityType"];
@@ -140,42 +147,46 @@ exports.editProfile = async (req, res) => {
     );
 
     if (!isValidOperation) {
-      res.status(400);
-      return res.status(400).json({
-        message: "Invalid updates",
-        error: "",
-      });
+      return res.status(400).json({ message: "Invalid updates" });
     }
 
     const user = await Auth.findById(req.user?.id);
-
     if (!user) {
-      return res.status(404).json({
-        error: "",
-        message: "User not found!",
-      });
+      return res.status(404).json({ message: "User not found!" });
     }
+
+    // Handle profile update
+
+    console.log(user.profile);
+    // Update other fields
     updates.forEach((update) => {
       user[update] = req.body[update];
     });
+
+    if (req.file) {
+      user.profile = `${req.protocol}://${req.get("host")}/uploads/profiles/${
+        req.file.filename
+      }`;
+    }
+
     await user.save();
-    res.status(201).send({
-      message: "User Updated successfuly!",
-      error: "",
+    res.status(200).json({
+      message: "User updated successfully!",
       data: {
         name: user.name,
-        userId: user.userId,
         visibilityType: user.visibilityType,
+        profile: user.profile,
       },
     });
   } catch (error) {
-    res.status(500).send({
+    console.error("Error in editProfile:", error);
+    res.status(500).json({
       message: "Unable to update user details at the moment.",
-      error: "",
-      errors: error,
+      error: error.message,
     });
   }
 };
+
 exports.deleteUser = async (req, res) => {
   try {
     const user = await Auth.findOne({ _id: req.user.id });

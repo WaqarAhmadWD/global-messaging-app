@@ -3,6 +3,8 @@ const router = express.Router();
 const controller = require("../controllers/auth.js");
 const { body } = require("express-validator");
 const middleware = require("../middlewares/middlewares.js");
+const { userProfileUpload } = require("../middlewares/uploads.js");
+
 // create user
 router.post(
   "/create",
@@ -41,6 +43,7 @@ router.get("/get", middleware.tokenValidator, controller.getUserDetails);
 router.put(
   "/update",
   middleware.tokenValidator,
+  userProfileUpload.single("profile"),
   [
     body("name")
       .isLength({ min: 3 })

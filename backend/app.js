@@ -7,6 +7,7 @@ connectionToDb();
 const http = require("http");
 const express = require("express");
 const { Server } = require("socket.io");
+const path = require("path");
 const cors = require("cors");
 const app = express();
 const corsOrigin = [
@@ -29,13 +30,10 @@ const corsSetting = {
 };
 
 app.use(cors());
-app.use(express.json());
 
-// routers
-const auth = require("./routers/auth.js");
-const message = require("./routers/message.js");
-const contact = require("./routers/contact.js");
-const dynamic = require("./routers/dynamic.js");
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Backend for OfenUp is deployed properly",
@@ -46,13 +44,30 @@ app.get("/api", (req, res) => {
     message: "Backend for OfenUp is deployed properly you are on /api",
   });
 });
-app.use("/api/auth", auth);
-app.use("/api/message", message);
-app.use("/api/contact", contact);
-app.use("/api/contact", contact);
-app.use("/api/dynamic", dynamic);
+app.use("/api/auth", require("./routers/auth.js"));
+app.use("/api/message", require("./routers/message.js"));
+app.use("/api/contact", require("./routers/contact.js"));
+app.use("/api/dynamic", require("./routers/dynamic.js"));
 
 // error and not found
+app.use((err, req, res, next) => {
+  return res.status(500).json({ message: err.stack });
+});
+app.get("/uploads/:photoType/:id", async (req, res) => {
+  const { photoType, id } = req.params;
+  if (!photoType || !id) {
+    return res.status(404).json({
+      message: `type and id is required`,
+    });
+  }
+  const imagePath = path.join(__dirname, `/uploads/${photoType}/${id}`); // Replace with your image path
+  res.sendFile(imagePath, (err) => {
+    if (err) {
+      res.status(500).send(`Error sending   ${photoType} the image`);
+    }
+  });
+});
+
 app.use((req, res) => {
   res.status(404).json({
     message: "Wrong URL or API",
